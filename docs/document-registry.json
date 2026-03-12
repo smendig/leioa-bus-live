@@ -1,0 +1,288 @@
+{
+  "version": 1,
+  "updatedAt": "2026-03-10",
+  "purpose": "Machine-readable registry for documentation discovery, topic routing, and canonical source selection.",
+  "categories": [
+    "reference",
+    "design",
+    "research",
+    "operations"
+  ],
+  "topics": [
+    "capture_pipeline",
+    "official_schedule_prior",
+    "tracking_design",
+    "live_api_reverse_engineering",
+    "heuristic_tuning",
+    "operational_patterns",
+    "session_analysis"
+  ],
+  "entrypoints": {
+    "documentation_index": "docs/README.md",
+    "capture_pipeline": "docs/data-capture-pipeline.md",
+    "official_schedule_prior": "docs/official-service-reference.json",
+    "tracking_design": "docs/tracking-redesign.md",
+    "current_empirical_state": "docs/session-analysis-2026-03-10.md",
+    "heuristic_tuning": "docs/heuristics-research-2026-03-09.md",
+    "operational_patterns": "docs/operational-research-2026-03-09.md"
+  },
+  "documents": [
+    {
+      "id": "docs-index",
+      "title": "Documentation Index",
+      "path": "docs/README.md",
+      "format": "markdown",
+      "category": "reference",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "capture_pipeline",
+        "official_schedule_prior",
+        "tracking_design",
+        "session_analysis",
+        "heuristic_tuning",
+        "operational_patterns",
+        "live_api_reverse_engineering"
+      ],
+      "canonicalFor": [
+        "documentation_navigation"
+      ],
+      "dependsOn": [],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "capture-pipeline",
+      "title": "Data Capture Pipeline",
+      "path": "docs/data-capture-pipeline.md",
+      "format": "markdown",
+      "category": "operations",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "capture_pipeline"
+      ],
+      "canonicalFor": [
+        "capture_pipeline"
+      ],
+      "dependsOn": [],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "official-service-reference-json",
+      "title": "Official Service Reference JSON",
+      "path": "docs/official-service-reference.json",
+      "format": "json",
+      "category": "reference",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "official_schedule_prior"
+      ],
+      "canonicalFor": [
+        "official_schedule_prior",
+        "line_service_windows",
+        "line_stop_order_reference"
+      ],
+      "dependsOn": [],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "official-service-reference-md",
+      "title": "Official Service Reference",
+      "path": "docs/official-service-reference.md",
+      "format": "markdown",
+      "category": "reference",
+      "status": "active",
+      "readPriority": "specialized",
+      "topics": [
+        "official_schedule_prior"
+      ],
+      "canonicalFor": [
+        "official_schedule_prior_explanation"
+      ],
+      "dependsOn": [
+        "official-service-reference-json"
+      ],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "tracking-redesign",
+      "title": "Tracking Redesign",
+      "path": "docs/tracking-redesign.md",
+      "format": "markdown",
+      "category": "design",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "tracking_design"
+      ],
+      "canonicalFor": [
+        "tracking_design"
+      ],
+      "dependsOn": [
+        "live-data-research-2026-03-07",
+        "heuristics-research-2026-03-09",
+        "session-analysis-2026-03-10"
+      ],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "live-data-research-2026-03-07",
+      "title": "Live Data Research - March 7, 2026",
+      "path": "docs/live-data-research-2026-03-07.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "historical",
+      "readPriority": "specialized",
+      "topics": [
+        "live_api_reverse_engineering",
+        "tracking_design"
+      ],
+      "canonicalFor": [
+        "initial_live_reverse_engineering"
+      ],
+      "dependsOn": [],
+      "supersedes": [],
+      "supersededBy": [
+        "session-analysis-2026-03-10"
+      ]
+    },
+    {
+      "id": "session-analysis-2026-03-08",
+      "title": "Session Analysis - March 8, 2026",
+      "path": "docs/session-analysis-2026-03-08.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "historical",
+      "readPriority": "historical",
+      "topics": [
+        "session_analysis"
+      ],
+      "canonicalFor": [],
+      "dependsOn": [
+        "capture-pipeline"
+      ],
+      "supersedes": [],
+      "supersededBy": [
+        "session-analysis-2026-03-10"
+      ]
+    },
+    {
+      "id": "session-analysis-2026-03-09",
+      "title": "Session Analysis - March 9, 2026",
+      "path": "docs/session-analysis-2026-03-09.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "historical",
+      "readPriority": "historical",
+      "topics": [
+        "session_analysis"
+      ],
+      "canonicalFor": [],
+      "dependsOn": [
+        "capture-pipeline"
+      ],
+      "supersedes": [],
+      "supersededBy": [
+        "session-analysis-2026-03-10"
+      ]
+    },
+    {
+      "id": "session-analysis-2026-03-10",
+      "title": "Session Analysis - March 10, 2026",
+      "path": "docs/session-analysis-2026-03-10.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "session_analysis",
+        "operational_patterns"
+      ],
+      "canonicalFor": [
+        "current_empirical_state",
+        "overnight_behavior"
+      ],
+      "dependsOn": [
+        "capture-pipeline",
+        "session-analysis-2026-03-09"
+      ],
+      "supersedes": [
+        "session-analysis-2026-03-08",
+        "session-analysis-2026-03-09"
+      ],
+      "supersededBy": []
+    },
+    {
+      "id": "heuristics-research-2026-03-09",
+      "title": "Heuristics Research - March 9, 2026",
+      "path": "docs/heuristics-research-2026-03-09.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "heuristic_tuning"
+      ],
+      "canonicalFor": [
+        "heuristic_threshold_evidence"
+      ],
+      "dependsOn": [
+        "session-analysis-2026-03-08",
+        "session-analysis-2026-03-09"
+      ],
+      "supersedes": [],
+      "supersededBy": []
+    },
+    {
+      "id": "operational-research-2026-03-09",
+      "title": "Operational Data Research - March 9, 2026",
+      "path": "docs/operational-research-2026-03-09.md",
+      "format": "markdown",
+      "category": "research",
+      "status": "active",
+      "readPriority": "entrypoint",
+      "topics": [
+        "operational_patterns"
+      ],
+      "canonicalFor": [
+        "hour_of_day_patterns",
+        "line_switch_behavior"
+      ],
+      "dependsOn": [
+        "session-analysis-2026-03-09"
+      ],
+      "supersedes": [],
+      "supersededBy": [
+        "session-analysis-2026-03-10"
+      ]
+    }
+  ],
+  "heuristics-deep-dive-2026-03-12": {
+    "path": "docs/heuristics-deep-dive-2026-03-12.md",
+    "title": "Advanced Heuristics & Anomaly Analysis",
+    "category": "research",
+    "status": "active",
+    "topics": [
+      "heuristic_tuning",
+      "anomaly_detection",
+      "ghost_signatures"
+    ],
+    "canonical_for": [
+      "tracking_heuristics",
+      "eta_volatility"
+    ],
+    "depends_on": [
+      "session-analysis-2026-03-10"
+    ],
+    "supersedes": [
+      "heuristics-research-2026-03-09"
+    ],
+    "superseded_by": []
+  }
+}

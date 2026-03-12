@@ -1,0 +1,62 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_BUS_API_URL: ${{ secrets.BUS_API_URL }}
+          VITE_BUS_API_USER: ${{ secrets.BUS_API_USER }}
+          VITE_BUS_API_PASSWORD: ${{ secrets.BUS_API_PASSWORD }}
+          VITE_BUS_AES_KEY: ${{ secrets.BUS_AES_KEY }}
+          VITE_BUS_AES_IV: ${{ secrets.BUS_AES_IV }}
+          VITE_BUS_GROUP_ID: ${{ secrets.BUS_GROUP_ID }}
+          VITE_BUS_LANG: ${{ secrets.BUS_LANG }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

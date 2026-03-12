@@ -1,0 +1,1367 @@
+
+> leioabusa-web@0.0.0 analyze:session
+> node scripts/analyze-session-advanced.mjs --input captures/sessions/session-2026-03-10T10-24-41-759Z
+
+{
+  "session": {
+    "sessionId": "session-2026-03-10T10-24-41-759Z",
+    "status": "running",
+    "createdAt": "2026-03-10T10:24:42.224Z",
+    "firstCaptureAt": "2026-03-10T10:24:42.227Z",
+    "lastCaptureAt": "2026-03-12T11:09:33.090Z",
+    "updatedAt": "2026-03-12T11:09:33.090Z",
+    "intervalSeconds": 15,
+    "completedSnapshots": 11267,
+    "failedPolls": 7,
+    "totalStopPolls": 360544,
+    "durationHours": 48.75
+  },
+  "network": {
+    "snapshotsAnalyzed": 11267,
+    "uniqueBusCount": 4,
+    "activeBusCountDistribution": {
+      "0": 3634,
+      "1": 306,
+      "2": 2391,
+      "3": 4907,
+      "4": 29
+    },
+    "linesObserved": [
+      {
+        "lineRef": "L.1 LEIOA",
+        "lineName": "LINEA 1 SAN BARTOLOME",
+        "busesObserved": 2,
+        "totalSnapshots": 11772
+      },
+      {
+        "lineRef": "L.2 LEIOA",
+        "lineName": "LINEA 2 TXORIERRI",
+        "busesObserved": 2,
+        "totalSnapshots": 8153
+      }
+    ]
+  },
+  "buses": [
+    {
+      "busId": "308",
+      "lineRef": "L.1 LEIOA",
+      "lineName": "LINEA 1 SAN BARTOLOME",
+      "snapshotsObserved": 6531,
+      "firstSeenAt": "2026-03-10T10:24:42.227Z",
+      "lastSeenAt": "2026-03-12T11:09:33.090Z",
+      "observationSegmentCount": 5,
+      "observationSegments": [
+        {
+          "snapshots": 2480,
+          "startAt": "2026-03-10T10:24:42.227Z",
+          "endAt": "2026-03-10T21:09:58.196Z",
+          "durationMinutes": 645.27
+        },
+        {
+          "snapshots": 1256,
+          "startAt": "2026-03-11T05:23:46.535Z",
+          "endAt": "2026-03-11T10:56:54.027Z",
+          "durationMinutes": 333.12
+        },
+        {
+          "snapshots": 1565,
+          "startAt": "2026-03-11T10:57:35.193Z",
+          "endAt": "2026-03-11T17:54:30.032Z",
+          "durationMinutes": 416.91
+        },
+        {
+          "snapshots": 921,
+          "startAt": "2026-03-11T17:55:10.856Z",
+          "endAt": "2026-03-11T21:52:52.927Z",
+          "durationMinutes": 237.7
+        },
+        {
+          "snapshots": 309,
+          "startAt": "2026-03-12T09:50:29.212Z",
+          "endAt": "2026-03-12T11:09:33.090Z",
+          "durationMinutes": 79.06
+        }
+      ],
+      "uniqueNearestStopCount": 31,
+      "nearestStopPathSample": [
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "METRO LAMIAKO",
+        "TXOPOETA",
+        "METRO LEIOA ( SENTIDO LEIOA)",
+        "LIBANO (DIRECCION LEIOA)",
+        "ITURRIBIDE",
+        "IKEA",
+        "DONIBANE SAN JUAN ",
+        "KULTUR LEIOA",
+        "ALDEKOENA",
+        "SARRIENA",
+        "ARTATZAGANA",
+        "SAN BARTOLOMÉ",
+        "JOAQUIN ACHUCARRO",
+        "BASAEZ",
+        "ARTATZA",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "METRO LAMIAKO",
+        "TXOPOETA",
+        "METRO LEIOA ( SENTIDO LEIOA)",
+        "LIBANO (DIRECCION LEIOA)",
+        "ITURRIBIDE",
+        "IKEA",
+        "DONIBANE SAN JUAN ",
+        "KULTUR LEIOA",
+        "ALDEKOENA",
+        "SARRIENA",
+        "ARTATZAGANA",
+        "SAN BARTOLOMÉ",
+        "JOAQUIN ACHUCARRO"
+      ],
+      "transitionCount": 640,
+      "lineIndexWrapCount": 38,
+      "longestExactFreezeRuns": [
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 139,
+          "startAt": "2026-03-10T13:54:19.578Z",
+          "endAt": "2026-03-10T14:30:08.695Z",
+          "durationMinutes": 35.82
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 122,
+          "startAt": "2026-03-11T14:28:39.376Z",
+          "endAt": "2026-03-11T15:00:56.581Z",
+          "durationMinutes": 32.29
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 119,
+          "startAt": "2026-03-11T13:37:05.148Z",
+          "endAt": "2026-03-11T14:09:31.864Z",
+          "durationMinutes": 32.45
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 0,
+          "snapshots": 78,
+          "startAt": "2026-03-11T18:33:06.051Z",
+          "endAt": "2026-03-11T18:52:57.729Z",
+          "durationMinutes": 19.86
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 77,
+          "startAt": "2026-03-11T15:03:19.585Z",
+          "endAt": "2026-03-11T15:23:22.180Z",
+          "durationMinutes": 20.04
+        }
+      ],
+      "longestStopRuns": [
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 424,
+          "startAt": "2026-03-11T13:30:52.131Z",
+          "endAt": "2026-03-11T15:24:57.191Z",
+          "durationMinutes": 114.08,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 221,
+          "startAt": "2026-03-10T13:46:20.436Z",
+          "endAt": "2026-03-10T14:43:45.816Z",
+          "durationMinutes": 57.42,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 155,
+          "startAt": "2026-03-11T18:32:20.005Z",
+          "endAt": "2026-03-11T19:12:07.372Z",
+          "durationMinutes": 39.79,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "360",
+          "stopName": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+          "snapshots": 144,
+          "startAt": "2026-03-11T05:23:46.535Z",
+          "endAt": "2026-03-11T06:00:56.197Z",
+          "durationMinutes": 37.16,
+          "etaRange": {
+            "min": 0,
+            "max": 3
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 83,
+          "startAt": "2026-03-11T17:28:52.576Z",
+          "endAt": "2026-03-11T17:50:04.071Z",
+          "durationMinutes": 21.19,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        }
+      ],
+      "sameStopEtaDeltaStats": {
+        "sameStopComparisons": 5886,
+        "etaIncreaseCount": 45,
+        "largeJumpCount": 16,
+        "deltaDistribution": {
+          "0": 5103,
+          "1": 40,
+          "2": 5,
+          "-3": 16,
+          "-2": 69,
+          "-1": 653
+        },
+        "anomalousSamples": [
+          {
+            "capturedAt": "2026-03-10T12:12:47.601Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T12:58:05.251Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T13:43:45.201Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 7,
+            "toMinutes": 4,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T13:44:15.767Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T15:17:57.403Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 7,
+            "toMinutes": 4,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T15:18:29.136Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T16:00:37.540Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 7,
+            "toMinutes": 4,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T16:01:09.973Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T16:54:03.265Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 8,
+            "toMinutes": 5,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T20:37:18.984Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T09:45:49.580Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 8,
+            "toMinutes": 5,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T12:05:31.046Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 7,
+            "toMinutes": 4,
+            "delta": -3
+          }
+        ]
+      },
+      "routeGapSummary": {
+        "snapshotsWithGaps": 5899,
+        "totalGapPairs": 7298,
+        "topGapPairs": [
+          {
+            "key": "ALDEKOENA -> SARRIENA",
+            "fromStop": "ALDEKOENA",
+            "toStop": "SARRIENA",
+            "count": 5892
+          },
+          {
+            "key": "AREETA ANBULATORIOA -> TXOPOETA",
+            "fromStop": "AREETA ANBULATORIOA",
+            "toStop": "TXOPOETA",
+            "count": 209
+          },
+          {
+            "key": "METRO LAMIAKO (DIRECCION AMAIA) -> INSTITUTUA",
+            "fromStop": "METRO LAMIAKO (DIRECCION AMAIA)",
+            "toStop": "INSTITUTUA",
+            "count": 200
+          },
+          {
+            "key": "METRO LAMIAKO -> AREETA ANBULATORIOA",
+            "fromStop": "METRO LAMIAKO",
+            "toStop": "AREETA ANBULATORIOA",
+            "count": 190
+          },
+          {
+            "key": "LIBANO(DIRECCION AMAIA) -> TXOPOETA ( DIRECCION AMAIA)",
+            "fromStop": "LIBANO(DIRECCION AMAIA)",
+            "toStop": "TXOPOETA ( DIRECCION AMAIA)",
+            "count": 144
+          },
+          {
+            "key": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA) -> AREETA ANBULATORIOA",
+            "fromStop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+            "toStop": "AREETA ANBULATORIOA",
+            "count": 140
+          },
+          {
+            "key": "ARTATZA -> BULEBARRA",
+            "fromStop": "ARTATZA",
+            "toStop": "BULEBARRA",
+            "count": 59
+          },
+          {
+            "key": "ARTATZA -> INSTITUTUA",
+            "fromStop": "ARTATZA",
+            "toStop": "INSTITUTUA",
+            "count": 45
+          },
+          {
+            "key": "ARTATZAGANA -> INSTITUTUA",
+            "fromStop": "ARTATZAGANA",
+            "toStop": "INSTITUTUA",
+            "count": 42
+          },
+          {
+            "key": "AREETA ANBULATORIOA -> INSTITUTUA",
+            "fromStop": "AREETA ANBULATORIOA",
+            "toStop": "INSTITUTUA",
+            "count": 33
+          }
+        ]
+      },
+      "adjacentMinuteDeltaSummary": {
+        "samples": 128776,
+        "average": 1.93,
+        "median": 1,
+        "min": 0,
+        "max": 321
+      }
+    },
+    {
+      "busId": "228",
+      "lineRef": "L.2 LEIOA",
+      "lineName": "LINEA 2 TXORIERRI",
+      "snapshotsObserved": 5881,
+      "firstSeenAt": "2026-03-10T14:59:03.404Z",
+      "lastSeenAt": "2026-03-12T09:53:49.601Z",
+      "observationSegmentCount": 5,
+      "observationSegments": [
+        {
+          "snapshots": 1600,
+          "startAt": "2026-03-10T14:59:03.404Z",
+          "endAt": "2026-03-10T21:56:56.043Z",
+          "durationMinutes": 417.88
+        },
+        {
+          "snapshots": 862,
+          "startAt": "2026-03-11T07:07:01.092Z",
+          "endAt": "2026-03-11T10:56:54.027Z",
+          "durationMinutes": 229.88
+        },
+        {
+          "snapshots": 1565,
+          "startAt": "2026-03-11T10:57:35.193Z",
+          "endAt": "2026-03-11T17:54:30.032Z",
+          "durationMinutes": 416.91
+        },
+        {
+          "snapshots": 929,
+          "startAt": "2026-03-11T17:55:10.856Z",
+          "endAt": "2026-03-11T21:54:55.176Z",
+          "durationMinutes": 239.74
+        },
+        {
+          "snapshots": 925,
+          "startAt": "2026-03-12T05:52:09.518Z",
+          "endAt": "2026-03-12T09:53:49.601Z",
+          "durationMinutes": 241.67
+        }
+      ],
+      "uniqueNearestStopCount": 16,
+      "nearestStopPathSample": [
+        "INDEPENDENTZIA (DIRECCION AMAIA)",
+        "TXORIERRI",
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)",
+        "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+        "TXORIERRI",
+        "INDEPENDENTZIA (DIRECCION AMAIA)",
+        "TORRESOLO ( DIRECCION AMAIA)",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)",
+        "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+        "TXORIERRI",
+        "INDEPENDENTZIA (DIRECCION AMAIA)",
+        "TORRESOLO ( DIRECCION AMAIA)",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)"
+      ],
+      "transitionCount": 701,
+      "lineIndexWrapCount": 45,
+      "longestExactFreezeRuns": [
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 2,
+          "snapshots": 108,
+          "startAt": "2026-03-11T14:38:48.739Z",
+          "endAt": "2026-03-11T15:07:17.164Z",
+          "durationMinutes": 28.47
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 2,
+          "snapshots": 90,
+          "startAt": "2026-03-12T09:24:23.757Z",
+          "endAt": "2026-03-12T09:47:09.629Z",
+          "durationMinutes": 22.76
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 2,
+          "snapshots": 54,
+          "startAt": "2026-03-10T19:42:58.935Z",
+          "endAt": "2026-03-10T19:56:40.617Z",
+          "durationMinutes": 13.69
+        },
+        {
+          "stopId": "364",
+          "stopName": "TXORIERRI",
+          "minutes": 2,
+          "snapshots": 38,
+          "startAt": "2026-03-10T15:04:53.737Z",
+          "endAt": "2026-03-10T15:14:46.326Z",
+          "durationMinutes": 9.88
+        },
+        {
+          "stopId": "395",
+          "stopName": "PINUETA",
+          "minutes": 2,
+          "snapshots": 31,
+          "startAt": "2026-03-10T21:37:58.938Z",
+          "endAt": "2026-03-10T21:45:41.622Z",
+          "durationMinutes": 7.71
+        }
+      ],
+      "longestStopRuns": [
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "snapshots": 155,
+          "startAt": "2026-03-11T14:36:55.307Z",
+          "endAt": "2026-03-11T15:17:44.692Z",
+          "durationMinutes": 40.82,
+          "etaRange": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "snapshots": 139,
+          "startAt": "2026-03-12T09:18:30.471Z",
+          "endAt": "2026-03-12T09:53:49.601Z",
+          "durationMinutes": 35.32,
+          "etaRange": {
+            "min": 1,
+            "max": 2
+          }
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "snapshots": 58,
+          "startAt": "2026-03-10T19:42:58.935Z",
+          "endAt": "2026-03-10T19:57:42.426Z",
+          "durationMinutes": 14.72,
+          "etaRange": {
+            "min": 1,
+            "max": 2
+          }
+        },
+        {
+          "stopId": "364",
+          "stopName": "TXORIERRI",
+          "snapshots": 38,
+          "startAt": "2026-03-10T15:04:53.737Z",
+          "endAt": "2026-03-10T15:14:46.326Z",
+          "durationMinutes": 9.88,
+          "etaRange": {
+            "min": 2,
+            "max": 2
+          }
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "snapshots": 34,
+          "startAt": "2026-03-10T20:22:35.690Z",
+          "endAt": "2026-03-10T20:31:08.916Z",
+          "durationMinutes": 8.55,
+          "etaRange": {
+            "min": 1,
+            "max": 2
+          }
+        }
+      ],
+      "sameStopEtaDeltaStats": {
+        "sameStopComparisons": 5175,
+        "etaIncreaseCount": 24,
+        "largeJumpCount": 2,
+        "deltaDistribution": {
+          "0": 4322,
+          "1": 19,
+          "2": 5,
+          "-3": 2,
+          "-2": 25,
+          "-1": 802
+        },
+        "anomalousSamples": [
+          {
+            "capturedAt": "2026-03-10T19:12:59.133Z",
+            "stopName": "TXORIERRI",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T20:22:20.273Z",
+            "stopName": "TXORIERRI",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          }
+        ]
+      },
+      "routeGapSummary": {
+        "snapshotsWithGaps": 148,
+        "totalGapPairs": 296,
+        "topGapPairs": [
+          {
+            "key": "TXORIERRI -> TORRESOLO ( DIRECCION AMAIA)",
+            "fromStop": "TXORIERRI",
+            "toStop": "TORRESOLO ( DIRECCION AMAIA)",
+            "count": 125
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> TXORIERRI",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "TXORIERRI",
+            "count": 27
+          },
+          {
+            "key": "TORRESOLO ( DIRECCION TXORIERRI) -> TXORIERRI",
+            "fromStop": "TORRESOLO ( DIRECCION TXORIERRI)",
+            "toStop": "TXORIERRI",
+            "count": 23
+          },
+          {
+            "key": "BULEBARRA (DIRECC. TXORIERRI) -> INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+            "fromStop": "BULEBARRA (DIRECC. TXORIERRI)",
+            "toStop": "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+            "count": 23
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> IPARRAGIRRE",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "IPARRAGIRRE",
+            "count": 18
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> TORRESOLO ( DIRECCION TXORIERRI)",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "TORRESOLO ( DIRECCION TXORIERRI)",
+            "count": 15
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+            "count": 8
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> AREETA ANBULATORIOA",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "AREETA ANBULATORIOA",
+            "count": 8
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> PINUETA",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "PINUETA",
+            "count": 8
+          },
+          {
+            "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> LIBANO(DIRECCION AMAIA)",
+            "fromStop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "toStop": "LIBANO(DIRECCION AMAIA)",
+            "count": 7
+          }
+        ]
+      },
+      "adjacentMinuteDeltaSummary": {
+        "samples": 87919,
+        "average": 1.85,
+        "median": 2,
+        "min": 0,
+        "max": 5
+      }
+    },
+    {
+      "busId": "307",
+      "lineRef": "L.1 LEIOA",
+      "lineName": "LINEA 1 SAN BARTOLOME",
+      "snapshotsObserved": 5241,
+      "firstSeenAt": "2026-03-10T14:03:20.853Z",
+      "lastSeenAt": "2026-03-11T21:38:58.403Z",
+      "observationSegmentCount": 4,
+      "observationSegments": [
+        {
+          "snapshots": 1756,
+          "startAt": "2026-03-10T14:03:20.853Z",
+          "endAt": "2026-03-10T21:42:53.621Z",
+          "durationMinutes": 459.55
+        },
+        {
+          "snapshots": 1053,
+          "startAt": "2026-03-11T06:16:37.178Z",
+          "endAt": "2026-03-11T10:56:54.027Z",
+          "durationMinutes": 280.28
+        },
+        {
+          "snapshots": 1565,
+          "startAt": "2026-03-11T10:57:35.193Z",
+          "endAt": "2026-03-11T17:54:30.032Z",
+          "durationMinutes": 416.91
+        },
+        {
+          "snapshots": 867,
+          "startAt": "2026-03-11T17:55:10.856Z",
+          "endAt": "2026-03-11T21:38:58.403Z",
+          "durationMinutes": 223.79
+        }
+      ],
+      "uniqueNearestStopCount": 22,
+      "nearestStopPathSample": [
+        "METRO LAMIAKO",
+        "TXOPOETA",
+        "METRO LEIOA ( SENTIDO LEIOA)",
+        "LIBANO (DIRECCION LEIOA)",
+        "ITURRIBIDE",
+        "IKEA",
+        "DONIBANE SAN JUAN ",
+        "KULTUR LEIOA",
+        "ALDEKOENA",
+        "SARRIENA",
+        "ARTATZAGANA",
+        "SAN BARTOLOMÉ",
+        "JOAQUIN ACHUCARRO",
+        "BASAEZ",
+        "ARTATZA",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "METRO LAMIAKO",
+        "TXOPOETA",
+        "METRO LEIOA ( SENTIDO LEIOA)",
+        "LIBANO (DIRECCION LEIOA)",
+        "ITURRIBIDE",
+        "IKEA",
+        "DONIBANE SAN JUAN ",
+        "KULTUR LEIOA",
+        "ALDEKOENA",
+        "SARRIENA",
+        "ARTATZAGANA",
+        "SAN BARTOLOMÉ",
+        "JOAQUIN ACHUCARRO",
+        "BASAEZ",
+        "ARTATZA",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)"
+      ],
+      "transitionCount": 176,
+      "lineIndexWrapCount": 9,
+      "longestExactFreezeRuns": [
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 163,
+          "startAt": "2026-03-11T16:45:00.461Z",
+          "endAt": "2026-03-11T17:27:34.202Z",
+          "durationMinutes": 42.56
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 161,
+          "startAt": "2026-03-10T17:35:16.075Z",
+          "endAt": "2026-03-10T18:16:48.276Z",
+          "durationMinutes": 41.54
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 149,
+          "startAt": "2026-03-11T15:06:13.903Z",
+          "endAt": "2026-03-11T15:46:02.335Z",
+          "durationMinutes": 39.81
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 146,
+          "startAt": "2026-03-11T12:29:44.671Z",
+          "endAt": "2026-03-11T13:08:00.780Z",
+          "durationMinutes": 38.27
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "minutes": 1,
+          "snapshots": 146,
+          "startAt": "2026-03-11T14:06:13.633Z",
+          "endAt": "2026-03-11T14:45:34.969Z",
+          "durationMinutes": 39.36
+        }
+      ],
+      "longestStopRuns": [
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 1565,
+          "startAt": "2026-03-11T10:57:35.193Z",
+          "endAt": "2026-03-11T17:54:30.032Z",
+          "durationMinutes": 416.91,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 1007,
+          "startAt": "2026-03-10T17:22:22.734Z",
+          "endAt": "2026-03-10T21:42:53.621Z",
+          "durationMinutes": 260.51,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 867,
+          "startAt": "2026-03-11T17:55:10.856Z",
+          "endAt": "2026-03-11T21:38:58.403Z",
+          "durationMinutes": 223.79,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 370,
+          "startAt": "2026-03-11T09:19:42.640Z",
+          "endAt": "2026-03-11T10:56:54.027Z",
+          "durationMinutes": 97.19,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 70,
+          "startAt": "2026-03-10T14:44:18.226Z",
+          "endAt": "2026-03-10T15:02:47.387Z",
+          "durationMinutes": 18.49,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        }
+      ],
+      "sameStopEtaDeltaStats": {
+        "sameStopComparisons": 5061,
+        "etaIncreaseCount": 46,
+        "largeJumpCount": 12,
+        "deltaDistribution": {
+          "0": 4786,
+          "1": 45,
+          "36": 1,
+          "-57": 1,
+          "-56": 1,
+          "-44": 1,
+          "-6": 1,
+          "-5": 1,
+          "-3": 6,
+          "-2": 15,
+          "-1": 203
+        },
+        "anomalousSamples": [
+          {
+            "capturedAt": "2026-03-10T14:04:08.089Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 21,
+            "toMinutes": 15,
+            "delta": -6
+          },
+          {
+            "capturedAt": "2026-03-10T14:04:38.912Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 15,
+            "toMinutes": 10,
+            "delta": -5
+          },
+          {
+            "capturedAt": "2026-03-10T15:44:39.339Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 7,
+            "toMinutes": 4,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T17:21:35.313Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 5,
+            "toMinutes": 2,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T06:17:26.582Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 168,
+            "toMinutes": 165,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T06:19:00.333Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 165,
+            "toMinutes": 201,
+            "delta": 36
+          },
+          {
+            "capturedAt": "2026-03-11T06:21:07.013Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 198,
+            "toMinutes": 141,
+            "delta": -57
+          },
+          {
+            "capturedAt": "2026-03-11T06:21:38.319Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 141,
+            "toMinutes": 97,
+            "delta": -44
+          },
+          {
+            "capturedAt": "2026-03-11T06:22:56.260Z",
+            "stopName": "METRO LAMIAKO",
+            "fromMinutes": 97,
+            "toMinutes": 41,
+            "delta": -56
+          },
+          {
+            "capturedAt": "2026-03-11T07:46:03.559Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T08:39:09.339Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-11T09:19:11.304Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 6,
+            "toMinutes": 3,
+            "delta": -3
+          }
+        ]
+      },
+      "routeGapSummary": {
+        "snapshotsWithGaps": 5167,
+        "totalGapPairs": 5222,
+        "topGapPairs": [
+          {
+            "key": "ALDEKOENA -> SARRIENA",
+            "fromStop": "ALDEKOENA",
+            "toStop": "SARRIENA",
+            "count": 5167
+          },
+          {
+            "key": "AREETA ANBULATORIOA -> TXOPOETA",
+            "fromStop": "AREETA ANBULATORIOA",
+            "toStop": "TXOPOETA",
+            "count": 27
+          },
+          {
+            "key": "METRO LAMIAKO -> AREETA ANBULATORIOA",
+            "fromStop": "METRO LAMIAKO",
+            "toStop": "AREETA ANBULATORIOA",
+            "count": 14
+          },
+          {
+            "key": "METRO LAMIAKO -> LIBANO (DIRECCION LEIOA)",
+            "fromStop": "METRO LAMIAKO",
+            "toStop": "LIBANO (DIRECCION LEIOA)",
+            "count": 7
+          },
+          {
+            "key": "METRO LAMIAKO -> ITURRIBIDE",
+            "fromStop": "METRO LAMIAKO",
+            "toStop": "ITURRIBIDE",
+            "count": 6
+          },
+          {
+            "key": "METRO LAMIAKO (DIRECCION AMAIA) -> METRO LAMIAKO",
+            "fromStop": "METRO LAMIAKO (DIRECCION AMAIA)",
+            "toStop": "METRO LAMIAKO",
+            "count": 1
+          }
+        ]
+      },
+      "adjacentMinuteDeltaSummary": {
+        "samples": 104839,
+        "average": 1.86,
+        "median": 1,
+        "min": 0,
+        "max": 202
+      }
+    },
+    {
+      "busId": "306",
+      "lineRef": "L.2 LEIOA",
+      "lineName": "LINEA 2 TXORIERRI",
+      "snapshotsObserved": 2272,
+      "firstSeenAt": "2026-03-10T10:24:42.227Z",
+      "lastSeenAt": "2026-03-12T11:09:33.090Z",
+      "observationSegmentCount": 3,
+      "observationSegments": [
+        {
+          "snapshots": 1078,
+          "startAt": "2026-03-10T10:24:42.227Z",
+          "endAt": "2026-03-10T15:02:47.387Z",
+          "durationMinutes": 278.09
+        },
+        {
+          "snapshots": 14,
+          "startAt": "2026-03-11T14:03:09.501Z",
+          "endAt": "2026-03-11T14:06:46.964Z",
+          "durationMinutes": 3.62
+        },
+        {
+          "snapshots": 1180,
+          "startAt": "2026-03-12T06:02:34.539Z",
+          "endAt": "2026-03-12T11:09:33.090Z",
+          "durationMinutes": 306.98
+        }
+      ],
+      "uniqueNearestStopCount": 31,
+      "nearestStopPathSample": [
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)",
+        "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+        "TXORIERRI",
+        "INDEPENDENTZIA (DIRECCION AMAIA)",
+        "TORRESOLO ( DIRECCION AMAIA)",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)",
+        "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+        "TXORIERRI",
+        "INDEPENDENTZIA (DIRECCION AMAIA)",
+        "TORRESOLO ( DIRECCION AMAIA)",
+        "IPARRAGIRRE",
+        "BULEBARRA",
+        "LIBANO(DIRECCION AMAIA)",
+        "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+        "TXOPOETA ( DIRECCION AMAIA)",
+        "METRO LAMIAKO (DIRECCION AMAIA)",
+        "AREETA ANBULATORIOA",
+        "PINUETA",
+        "PINOSOLO",
+        "IPARRAGIRRE (DIRECC. TXORIERRI)",
+        "BULEBARRA (DIRECC. TXORIERRI)",
+        "TORRESOLO ( DIRECCION TXORIERRI)",
+        "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+        "TXORIERRI"
+      ],
+      "transitionCount": 197,
+      "lineIndexWrapCount": 11,
+      "longestExactFreezeRuns": [
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 4,
+          "snapshots": 109,
+          "startAt": "2026-03-10T12:37:21.100Z",
+          "endAt": "2026-03-10T13:05:02.635Z",
+          "durationMinutes": 27.69
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 4,
+          "snapshots": 101,
+          "startAt": "2026-03-10T13:25:15.307Z",
+          "endAt": "2026-03-10T13:50:56.921Z",
+          "durationMinutes": 25.69
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 4,
+          "snapshots": 101,
+          "startAt": "2026-03-10T14:26:14.295Z",
+          "endAt": "2026-03-10T14:52:57.899Z",
+          "durationMinutes": 26.73
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 4,
+          "snapshots": 89,
+          "startAt": "2026-03-10T13:57:40.324Z",
+          "endAt": "2026-03-10T14:20:27.323Z",
+          "durationMinutes": 22.78
+        },
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "minutes": 4,
+          "snapshots": 60,
+          "startAt": "2026-03-10T13:07:50.699Z",
+          "endAt": "2026-03-10T13:22:57.667Z",
+          "durationMinutes": 15.12
+        }
+      ],
+      "longestStopRuns": [
+        {
+          "stopId": "365",
+          "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "snapshots": 603,
+          "startAt": "2026-03-10T12:26:34.436Z",
+          "endAt": "2026-03-10T15:02:47.387Z",
+          "durationMinutes": 156.22,
+          "etaRange": {
+            "min": 0,
+            "max": 4
+          }
+        },
+        {
+          "stopId": "342",
+          "stopName": "METRO LAMIAKO",
+          "snapshots": 49,
+          "startAt": "2026-03-12T08:52:58.805Z",
+          "endAt": "2026-03-12T09:05:12.513Z",
+          "durationMinutes": 12.23,
+          "etaRange": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "stopId": "341",
+          "stopName": "AREETA ANBULATORIOA",
+          "snapshots": 39,
+          "startAt": "2026-03-12T09:35:53.476Z",
+          "endAt": "2026-03-12T09:45:37.616Z",
+          "durationMinutes": 9.74,
+          "etaRange": {
+            "min": 0,
+            "max": 8
+          }
+        },
+        {
+          "stopId": "361",
+          "stopName": "TXOPOETA ( DIRECCION AMAIA)",
+          "snapshots": 37,
+          "startAt": "2026-03-12T07:22:50.684Z",
+          "endAt": "2026-03-12T07:32:28.975Z",
+          "durationMinutes": 9.64,
+          "etaRange": {
+            "min": 2,
+            "max": 2
+          }
+        },
+        {
+          "stopId": "345",
+          "stopName": "LIBANO (DIRECCION LEIOA)",
+          "snapshots": 37,
+          "startAt": "2026-03-12T07:32:44.625Z",
+          "endAt": "2026-03-12T07:42:13.291Z",
+          "durationMinutes": 9.48,
+          "etaRange": {
+            "min": 2,
+            "max": 2
+          }
+        }
+      ],
+      "sameStopEtaDeltaStats": {
+        "sameStopComparisons": 2072,
+        "etaIncreaseCount": 23,
+        "largeJumpCount": 6,
+        "deltaDistribution": {
+          "0": 1810,
+          "1": 16,
+          "2": 5,
+          "3": 2,
+          "-4": 1,
+          "-3": 3,
+          "-2": 22,
+          "-1": 213
+        },
+        "anomalousSamples": [
+          {
+            "capturedAt": "2026-03-10T11:18:40.481Z",
+            "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "fromMinutes": 3,
+            "toMinutes": 0,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T13:51:12.339Z",
+            "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "fromMinutes": 4,
+            "toMinutes": 0,
+            "delta": -4
+          },
+          {
+            "capturedAt": "2026-03-10T13:57:24.989Z",
+            "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "fromMinutes": 0,
+            "toMinutes": 3,
+            "delta": 3
+          },
+          {
+            "capturedAt": "2026-03-10T14:21:15.455Z",
+            "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "fromMinutes": 3,
+            "toMinutes": 0,
+            "delta": -3
+          },
+          {
+            "capturedAt": "2026-03-10T14:21:46.740Z",
+            "stopName": "INDEPENDENTZIA (DIRECCION AMAIA)",
+            "fromMinutes": 0,
+            "toMinutes": 3,
+            "delta": 3
+          },
+          {
+            "capturedAt": "2026-03-12T09:37:09.948Z",
+            "stopName": "AREETA ANBULATORIOA",
+            "fromMinutes": 4,
+            "toMinutes": 1,
+            "delta": -3
+          }
+        ]
+      },
+      "routeGapSummary": {
+        "snapshotsWithGaps": 981,
+        "totalGapPairs": 1539,
+        "topGapPairs": [
+          {
+            "key": "ALDEKOENA -> SARRIENA",
+            "fromStop": "ALDEKOENA",
+            "toStop": "SARRIENA",
+            "count": 981
+          },
+          {
+            "key": "METRO LEIOA ( SENTIDO LEIOA) -> INSTITUTUA",
+            "fromStop": "METRO LEIOA ( SENTIDO LEIOA)",
+            "toStop": "INSTITUTUA",
+            "count": 60
+          },
+          {
+            "key": "METRO LAMIAKO -> AREETA ANBULATORIOA",
+            "fromStop": "METRO LAMIAKO",
+            "toStop": "AREETA ANBULATORIOA",
+            "count": 49
+          },
+          {
+            "key": "AREETA ANBULATORIOA -> TXOPOETA",
+            "fromStop": "AREETA ANBULATORIOA",
+            "toStop": "TXOPOETA",
+            "count": 49
+          },
+          {
+            "key": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA) -> INSTITUTUA",
+            "fromStop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+            "toStop": "INSTITUTUA",
+            "count": 46
+          },
+          {
+            "key": "ITURRIBIDE -> INSTITUTUA",
+            "fromStop": "ITURRIBIDE",
+            "toStop": "INSTITUTUA",
+            "count": 43
+          },
+          {
+            "key": "LIBANO(DIRECCION AMAIA) -> INSTITUTUA",
+            "fromStop": "LIBANO(DIRECCION AMAIA)",
+            "toStop": "INSTITUTUA",
+            "count": 32
+          },
+          {
+            "key": "ARTATZA -> INSTITUTUA",
+            "fromStop": "ARTATZA",
+            "toStop": "INSTITUTUA",
+            "count": 31
+          },
+          {
+            "key": "AREETA ANBULATORIOA -> INSTITUTUA",
+            "fromStop": "AREETA ANBULATORIOA",
+            "toStop": "INSTITUTUA",
+            "count": 28
+          },
+          {
+            "key": "ARTATZAGANA -> INSTITUTUA",
+            "fromStop": "ARTATZAGANA",
+            "toStop": "INSTITUTUA",
+            "count": 27
+          }
+        ]
+      },
+      "adjacentMinuteDeltaSummary": {
+        "samples": 40267,
+        "average": 1.98,
+        "median": 2,
+        "min": 0,
+        "max": 321
+      }
+    }
+  ]
+}

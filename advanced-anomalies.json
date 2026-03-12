@@ -1,0 +1,178 @@
+{
+  "totalSnapshotsAnalyzed": 11281,
+  "terminalHolds": [
+    {
+      "stop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+      "numberOfHoldsDetected": 3,
+      "avgHoldMinutes": 851,
+      "maxHoldMinutes": 2496,
+      "predominantFrozenEta": 1
+    },
+    {
+      "stop": "METRO LAMIAKO",
+      "numberOfHoldsDetected": 14,
+      "avgHoldMinutes": 82,
+      "maxHoldMinutes": 781,
+      "predominantFrozenEta": 0
+    },
+    {
+      "stop": "LIBANO(DIRECCION AMAIA)",
+      "numberOfHoldsDetected": 2,
+      "avgHoldMinutes": 371,
+      "maxHoldMinutes": 730,
+      "predominantFrozenEta": 2
+    },
+    {
+      "stop": "TORRESOLO ( DIRECCION TXORIERRI)",
+      "numberOfHoldsDetected": 2,
+      "avgHoldMinutes": 522,
+      "maxHoldMinutes": 556,
+      "predominantFrozenEta": 3
+    },
+    {
+      "stop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "numberOfHoldsDetected": 1,
+      "avgHoldMinutes": 536,
+      "maxHoldMinutes": 536,
+      "predominantFrozenEta": 3
+    },
+    {
+      "stop": "IPARRAGIRRE",
+      "numberOfHoldsDetected": 1,
+      "avgHoldMinutes": 19,
+      "maxHoldMinutes": 19,
+      "predominantFrozenEta": 2
+    },
+    {
+      "stop": "AREETA ANBULATORIOA",
+      "numberOfHoldsDetected": 2,
+      "avgHoldMinutes": 11,
+      "maxHoldMinutes": 11,
+      "predominantFrozenEta": 8
+    },
+    {
+      "stop": "TXORIERRI",
+      "numberOfHoldsDetected": 2,
+      "avgHoldMinutes": 10,
+      "maxHoldMinutes": 10,
+      "predominantFrozenEta": 2
+    },
+    {
+      "stop": "ARTATZA",
+      "numberOfHoldsDetected": 1,
+      "avgHoldMinutes": 10,
+      "maxHoldMinutes": 10,
+      "predominantFrozenEta": 1
+    },
+    {
+      "stop": "KULTUR LEIOA",
+      "numberOfHoldsDetected": 1,
+      "avgHoldMinutes": 10,
+      "maxHoldMinutes": 10,
+      "predominantFrozenEta": 2
+    }
+  ],
+  "ghostSignaturesObserved": [
+    {
+      "busId": "307",
+      "stop": "METRO LAMIAKO",
+      "frozenEta": 1,
+      "maxFreezePolls": 162,
+      "estimatedFrozenMinutes": 41
+    },
+    {
+      "busId": "308",
+      "stop": "METRO LAMIAKO",
+      "frozenEta": 1,
+      "maxFreezePolls": 138,
+      "estimatedFrozenMinutes": 35
+    },
+    {
+      "busId": "306",
+      "stop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+      "frozenEta": 4,
+      "maxFreezePolls": 108,
+      "estimatedFrozenMinutes": 27
+    },
+    {
+      "busId": "228",
+      "stop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+      "frozenEta": 2,
+      "maxFreezePolls": 107,
+      "estimatedFrozenMinutes": 27
+    },
+    {
+      "busId": "308",
+      "stop": "METRO LAMIAKO",
+      "frozenEta": 0,
+      "maxFreezePolls": 77,
+      "estimatedFrozenMinutes": 19
+    },
+    {
+      "busId": "308",
+      "stop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "frozenEta": 1,
+      "maxFreezePolls": 67,
+      "estimatedFrozenMinutes": 17
+    },
+    {
+      "busId": "308",
+      "stop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "frozenEta": 2,
+      "maxFreezePolls": 60,
+      "estimatedFrozenMinutes": 15
+    }
+  ],
+  "mostVolatileStops": [
+    {
+      "stop": "AREETA ANBULATORIOA",
+      "increases": 113,
+      "jumps": 64
+    },
+    {
+      "stop": "TORRESOLO ( DIRECCION TXORIERRI)",
+      "increases": 53,
+      "jumps": 51
+    },
+    {
+      "stop": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "increases": 91,
+      "jumps": 12
+    },
+    {
+      "stop": "IPARRAGIRRE",
+      "increases": 96,
+      "jumps": 0
+    },
+    {
+      "stop": "LIBANO(DIRECCION AMAIA)",
+      "increases": 93,
+      "jumps": 0
+    },
+    {
+      "stop": "TXORIERRI",
+      "increases": 60,
+      "jumps": 32
+    },
+    {
+      "stop": "METRO LAMIAKO",
+      "increases": 76,
+      "jumps": 9
+    },
+    {
+      "stop": "TXOPOETA ( DIRECCION AMAIA)",
+      "increases": 65,
+      "jumps": 0
+    },
+    {
+      "stop": "INDEPENDENTZIA (DIRECCION AMAIA)",
+      "increases": 46,
+      "jumps": 16
+    },
+    {
+      "stop": "METRO LAMIAKO (DIRECCION AMAIA)",
+      "increases": 54,
+      "jumps": 4
+    }
+  ]
+}

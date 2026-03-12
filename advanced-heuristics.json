@@ -1,0 +1,245 @@
+{
+  "note": "avgErrorSec: Negative means bus arrived SOONER than ETA predicted. Positive means it arrived LATER.",
+  "predictionAccuracyByEta": [
+    {
+      "etaMin": 0,
+      "samples": 829,
+      "avgErrorSec": 43,
+      "medianErrorSec": 16
+    },
+    {
+      "etaMin": 1,
+      "samples": 1614,
+      "avgErrorSec": 24,
+      "medianErrorSec": 2
+    },
+    {
+      "etaMin": 2,
+      "samples": 888,
+      "avgErrorSec": 18,
+      "medianErrorSec": -9
+    },
+    {
+      "etaMin": 3,
+      "samples": 185,
+      "avgErrorSec": -41,
+      "medianErrorSec": -53
+    },
+    {
+      "etaMin": 4,
+      "samples": 122,
+      "avgErrorSec": -53,
+      "medianErrorSec": -44
+    },
+    {
+      "etaMin": 5,
+      "samples": 18,
+      "avgErrorSec": -93,
+      "medianErrorSec": -142
+    },
+    {
+      "etaMin": 6,
+      "samples": 16,
+      "avgErrorSec": -198,
+      "medianErrorSec": -218
+    },
+    {
+      "etaMin": 7,
+      "samples": 25,
+      "avgErrorSec": -208,
+      "medianErrorSec": -232
+    },
+    {
+      "etaMin": 8,
+      "samples": 36,
+      "avgErrorSec": -229,
+      "medianErrorSec": -242
+    },
+    {
+      "etaMin": 9,
+      "samples": 1,
+      "avgErrorSec": -509,
+      "medianErrorSec": -509
+    },
+    {
+      "etaMin": 10,
+      "samples": 1,
+      "avgErrorSec": -477,
+      "medianErrorSec": -477
+    },
+    {
+      "etaMin": 15,
+      "samples": 1,
+      "avgErrorSec": -746,
+      "medianErrorSec": -746
+    },
+    {
+      "etaMin": 21,
+      "samples": 1,
+      "avgErrorSec": -1058,
+      "medianErrorSec": -1058
+    }
+  ],
+  "empiricalTravelTimesTop20": [
+    {
+      "key": "IPARRAGIRRE -> BULEBARRA",
+      "samples": 91,
+      "avgSec": 104,
+      "medianSec": 79,
+      "minSec": 35,
+      "maxSec": 446
+    },
+    {
+      "key": "BULEBARRA -> LIBANO(DIRECCION AMAIA)",
+      "samples": 89,
+      "avgSec": 75,
+      "medianSec": 64,
+      "minSec": 33,
+      "maxSec": 394
+    },
+    {
+      "key": "LIBANO(DIRECCION AMAIA) -> METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "samples": 88,
+      "avgSec": 101,
+      "medianSec": 108,
+      "minSec": 47,
+      "maxSec": 190
+    },
+    {
+      "key": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA) -> TXOPOETA ( DIRECCION AMAIA)",
+      "samples": 88,
+      "avgSec": 161,
+      "medianSec": 158,
+      "minSec": 108,
+      "maxSec": 238
+    },
+    {
+      "key": "TXOPOETA ( DIRECCION AMAIA) -> METRO LAMIAKO (DIRECCION AMAIA)",
+      "samples": 86,
+      "avgSec": 74,
+      "medianSec": 62,
+      "minSec": 31,
+      "maxSec": 458
+    },
+    {
+      "key": "METRO LAMIAKO (DIRECCION AMAIA) -> AREETA ANBULATORIOA",
+      "samples": 86,
+      "avgSec": 78,
+      "medianSec": 78,
+      "minSec": 47,
+      "maxSec": 113
+    },
+    {
+      "key": "AREETA ANBULATORIOA -> PINUETA",
+      "samples": 51,
+      "avgSec": 244,
+      "medianSec": 242,
+      "minSec": 15,
+      "maxSec": 350
+    },
+    {
+      "key": "IPARRAGIRRE (DIRECC. TXORIERRI) -> BULEBARRA (DIRECC. TXORIERRI)",
+      "samples": 51,
+      "avgSec": 53,
+      "medianSec": 48,
+      "minSec": 32,
+      "maxSec": 94
+    },
+    {
+      "key": "BULEBARRA (DIRECC. TXORIERRI) -> TORRESOLO ( DIRECCION TXORIERRI)",
+      "samples": 51,
+      "avgSec": 67,
+      "medianSec": 63,
+      "minSec": 46,
+      "maxSec": 160
+    },
+    {
+      "key": "PINUETA -> PINOSOLO",
+      "samples": 50,
+      "avgSec": 185,
+      "medianSec": 169,
+      "minSec": 108,
+      "maxSec": 524
+    },
+    {
+      "key": "PINOSOLO -> IPARRAGIRRE (DIRECC. TXORIERRI)",
+      "samples": 50,
+      "avgSec": 209,
+      "medianSec": 202,
+      "minSec": 153,
+      "maxSec": 378
+    },
+    {
+      "key": "TORRESOLO ( DIRECCION TXORIERRI) -> INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+      "samples": 49,
+      "avgSec": 259,
+      "medianSec": 258,
+      "minSec": 186,
+      "maxSec": 362
+    },
+    {
+      "key": "TORRESOLO ( DIRECCION AMAIA) -> IPARRAGIRRE",
+      "samples": 48,
+      "avgSec": 58,
+      "medianSec": 46,
+      "minSec": 31,
+      "maxSec": 358
+    },
+    {
+      "key": "INDEPENDENTZIA ( DIRECCION TXORIERRI) -> TXORIERRI",
+      "samples": 47,
+      "avgSec": 42,
+      "medianSec": 46,
+      "minSec": 31,
+      "maxSec": 65
+    },
+    {
+      "key": "TXORIERRI -> INDEPENDENTZIA (DIRECCION AMAIA)",
+      "samples": 47,
+      "avgSec": 86,
+      "medianSec": 77,
+      "minSec": 48,
+      "maxSec": 433
+    },
+    {
+      "key": "INDEPENDENTZIA (DIRECCION AMAIA) -> TORRESOLO ( DIRECCION AMAIA)",
+      "samples": 45,
+      "avgSec": 240,
+      "medianSec": 202,
+      "minSec": 108,
+      "maxSec": 899
+    },
+    {
+      "key": "JOAQUIN ACHUCARRO -> BASAEZ",
+      "samples": 45,
+      "avgSec": 64,
+      "medianSec": 62,
+      "minSec": 31,
+      "maxSec": 111
+    },
+    {
+      "key": "BASAEZ -> ARTATZA",
+      "samples": 45,
+      "avgSec": 52,
+      "medianSec": 46,
+      "minSec": 16,
+      "maxSec": 199
+    },
+    {
+      "key": "ARTATZA -> IPARRAGIRRE",
+      "samples": 45,
+      "avgSec": 76,
+      "medianSec": 66,
+      "minSec": 32,
+      "maxSec": 226
+    },
+    {
+      "key": "KULTUR LEIOA -> ALDEKOENA",
+      "samples": 43,
+      "avgSec": 124,
+      "medianSec": 109,
+      "minSec": 65,
+      "maxSec": 555
+    }
+  ]
+}
