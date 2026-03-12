@@ -57,11 +57,11 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_BUS_API_URL: ${{ secrets.BUS_API_URL }}
-          VITE_BUS_API_USER: ${{ secrets.BUS_API_USER }}
-          VITE_BUS_API_PASSWORD: ${{ secrets.BUS_API_PASSWORD }}
-          VITE_BUS_AES_KEY: ${{ secrets.BUS_AES_KEY }}
-          VITE_BUS_AES_IV: ${{ secrets.BUS_AES_IV }}
+          VITE_BUS_API_URL: ${{ secrets.VITE_BUS_API_URL }}
+          VITE_BUS_API_USER: ${{ secrets.VITE_BUS_API_USER }}
+          VITE_BUS_API_PASSWORD: ${{ secrets.VITE_BUS_API_PASSWORD }}
+          VITE_BUS_AES_KEY: ${{ secrets.VITE_BUS_AES_KEY }}
+          VITE_BUS_AES_IV: ${{ secrets.VITE_BUS_AES_IV }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -2,7 +2,7 @@
 
 Visualize Leioa buses on a live map.
 
-Live demo: `https://smendig.github.io/leioa-bus-live/`
+Live demo: [smendig.github.io/leioa-bus-live](https://smendig.github.io/leioa-bus-live/)
 
 ## Run locally
 
