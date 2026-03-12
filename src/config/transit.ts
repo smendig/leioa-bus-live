@@ -4,6 +4,9 @@ export const MAP_DEFAULT_CENTER = {
   zoom: 14,
 } as const
 
+export const TRANSIT_PUBLIC_GROUP_ID = 13
+export const TRANSIT_PUBLIC_LANG = 'ES'
+
 export const MAP_POLL_INTERVAL_MS = 15000
 export const MAP_BOOTSTRAP_POLL_DELAYS_MS = [5000, 10000] as const
 export const MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT = 2

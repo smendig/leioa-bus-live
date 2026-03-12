@@ -1,17 +1,17 @@
 import CryptoJS from 'crypto-js'
 
+import { TRANSIT_PUBLIC_GROUP_ID, TRANSIT_PUBLIC_LANG } from '../config/transit'
 import type { Arrival, Line, LineStop, Station, Topology } from '../types/transit'
 
 const API_URL = getRequiredEnv('VITE_BUS_API_URL').replace(/\/+$/, '')
 const KEY = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_KEY'))
 const IV = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_IV'))
 const IV_B64 = CryptoJS.enc.Base64.stringify(IV)
-const BUS_GROUP_ID = getRequiredGroupId()
 
 const BASE_PAYLOAD = {
   ApiUser: getRequiredEnv('VITE_BUS_API_USER'),
   ApiPassword: getRequiredEnv('VITE_BUS_API_PASSWORD'),
-  Lang: getRequiredEnv('VITE_BUS_LANG'),
+  Lang: TRANSIT_PUBLIC_LANG,
 }
 
 type ApiPayload = Record<string, unknown>
@@ -64,16 +64,6 @@ function getRequiredEnv(name: keyof ImportMetaEnv): string {
   }
 
   return value.trim()
-}
-
-function getRequiredGroupId(): number {
-  const value = getRequiredEnv('VITE_BUS_GROUP_ID')
-  const parsedValue = Number.parseInt(value, 10)
-  if (!Number.isFinite(parsedValue)) {
-    throw new Error(`Invalid VITE_BUS_GROUP_ID: "${value}"`)
-  }
-
-  return parsedValue
 }
 
 function encryptPayload(data: ApiPayload): string {
@@ -139,8 +129,8 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
 
 export async function getTopology(): Promise<Topology> {
   const [linesData, stationsData] = await Promise.all([
-    makeRequest<LinesResponse>('/Lines', { search: { IdGroup: BUS_GROUP_ID } }),
-    makeRequest<StationsResponse>('/Stations', { search: { IdGroup: BUS_GROUP_ID } }),
+    makeRequest<LinesResponse>('/Lines', { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } }),
+    makeRequest<StationsResponse>('/Stations', { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } }),
   ])
 
   if (linesData?.Error !== '0' || stationsData?.Error !== '0') {

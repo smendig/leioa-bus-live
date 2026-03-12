@@ -62,8 +62,6 @@ jobs:
           VITE_BUS_API_PASSWORD: ${{ secrets.BUS_API_PASSWORD }}
           VITE_BUS_AES_KEY: ${{ secrets.BUS_AES_KEY }}
           VITE_BUS_AES_IV: ${{ secrets.BUS_AES_IV }}
-          VITE_BUS_GROUP_ID: ${{ secrets.BUS_GROUP_ID }}
-          VITE_BUS_LANG: ${{ secrets.BUS_LANG }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
