@@ -20,5 +20,3 @@ npm run dev
 - See [DISCLAIMER.md](DISCLAIMER.md) for legal/disclosure notes.
 
 ## More
-
-- Technical docs: [docs/README.md](docs/README.md)

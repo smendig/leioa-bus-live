@@ -1,13 +1,15 @@
 import {
+  EMPIRICAL_SEGMENT_PRIORS_MINUTES,
   ELAPSED_TIMEOUT_EXTRA_MINUTES,
   GHOST_BUS_GRACE_MINUTES,
-  MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT,
   LOW_ETA_GHOST_POLLS,
   LOW_ETA_PLATEAU_MAX_MINUTES,
   LOW_ETA_PLATEAU_WARNING_POLLS,
   LOW_ETA_SAME_STOP_OVERLAP_PENALTY,
+  MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT,
   SAME_STOP_OVERLAP_PENALTY,
   TRACKING_HOTSPOT_PRIORS,
+  TRACKING_VOLATILE_STOP_PRIORS,
 } from '../config/transit'
 import type { Line } from '../types/transit'
 import type {
@@ -115,23 +117,25 @@ export function buildSnapshotContext(activeBusGroups: ActiveBusGroup[]): Map<str
 
     const stopKey = `${group.lineRef}:${nearest.station.id}`
     const hotspot = TRACKING_HOTSPOT_PRIORS[stopKey]
+    const volatileStop = TRACKING_VOLATILE_STOP_PRIORS[nearest.station.id]
     const sameStopOverlapCount = Math.max(0, (sameStopCounts.get(stopKey) ?? 0) - 1)
     const lowEtaSameStopOverlapCount =
       nearest.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES
         ? Math.max(0, (sameStopLowEtaCounts.get(stopKey) ?? 0) - 1)
         : 0
 
-    let hotspotPenalty = hotspot?.basePenalty ?? 0
-    if (hotspot && nearest.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES) {
-      hotspotPenalty += hotspot.lowEtaPenalty
+    let hotspotPenalty = (hotspot?.basePenalty ?? 0) + (volatileStop?.basePenalty ?? 0)
+    if (nearest.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES) {
+      hotspotPenalty += (hotspot?.lowEtaPenalty ?? 0) + (volatileStop?.lowEtaPenalty ?? 0)
     }
 
-    if (hotspot && lowEtaSameStopOverlapCount > 0) {
-      hotspotPenalty += hotspot.overlapPenalty
+    if (lowEtaSameStopOverlapCount > 0) {
+      hotspotPenalty += (hotspot?.overlapPenalty ?? 0) + (volatileStop?.overlapPenalty ?? 0)
     }
 
+    const labels = [hotspot?.label, volatileStop?.label].filter(Boolean)
     contextByTrackingKey.set(group.trackingKey, {
-      hotspotLabel: hotspot?.label ?? null,
+      hotspotLabel: labels.length > 0 ? labels.join(' + ') : null,
       hotspotPenalty: Number(Math.min(0.6, hotspotPenalty).toFixed(2)),
       sameStopOverlapCount,
       lowEtaSameStopOverlapCount,
@@ -263,10 +267,11 @@ export function assessPredictionConfidence(
     ).toFixed(2),
   )
 
-  const isGhostCandidate =
-    history.lowEtaPlateauPolls >= LOW_ETA_GHOST_POLLS &&
-    plateauScore <= 0.15 &&
-    normalizedScore <= 0.25
+  const isHardFreezeCandidate =
+    history.repeatedPolls >= LOW_ETA_GHOST_POLLS && history.lastMinutes <= LOW_ETA_PLATEAU_MAX_MINUTES
+  const isSoftPlateauCandidate =
+    history.lowEtaPlateauPolls >= LOW_ETA_GHOST_POLLS && plateauScore <= 0.15 && normalizedScore <= 0.25
+  const isGhostCandidate = isHardFreezeCandidate || isSoftPlateauCandidate
 
   const ghostReason = isGhostCandidate ? 'low_eta_plateau' : null
   const label: BusConfidenceLabel =
@@ -471,6 +476,18 @@ function estimateSegmentMinutes(
   predictions: BusPrediction[],
   nextStopIndex: number,
 ): number {
+  const previousStopIndex = getWrappedIndex(nextStopIndex - 1, line.stops.length)
+  const previousStopId = line.stops[previousStopIndex]?.id
+  const nextStopId = line.stops[nextStopIndex]?.id
+  const empiricalPriorMinutes =
+    previousStopId && nextStopId
+      ? EMPIRICAL_SEGMENT_PRIORS_MINUTES[`${previousStopId}->${nextStopId}`]
+      : null
+
+  if (empiricalPriorMinutes && empiricalPriorMinutes > 0) {
+    return empiricalPriorMinutes
+  }
+
   const nextAdjacentStopIndex = getWrappedIndex(nextStopIndex + 1, line.stops.length)
   const nextAdjacentStopId = line.stops[nextAdjacentStopIndex]?.id
 
