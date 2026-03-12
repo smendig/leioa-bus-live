@@ -1,9 +1,10 @@
 import polyline from '@mapbox/polyline'
 import * as turf from '@turf/turf'
 import type { Feature, LineString, MultiLineString, Position } from 'geojson'
+
 import { BUS_SPEED_KM_PER_MINUTE } from '../config/transit'
-import type { LngLat } from '../types/transit'
 import type { BusRenderState, ResolvedBusSegment } from '../types/tracking'
+import type { LngLat } from '../types/transit'
 
 export type RouteLine = Feature<LineString>
 export type DisplayGeometry = Feature<MultiLineString>

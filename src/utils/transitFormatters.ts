@@ -1,5 +1,5 @@
-import type { Arrival, Station } from '../types/transit'
 import type { BusConfidenceLabel, BusPrediction, BusRenderState } from '../types/tracking'
+import type { Arrival, Station } from '../types/transit'
 
 export function buildArrivalsPopup(
   station: Station,
@@ -7,11 +7,13 @@ export function buildArrivalsPopup(
   resolveLineName: (lineRef: string) => string,
 ): string {
   if (arrivals.length === 0) {
-    return `<h3>${station.name}</h3><p>No active buses expected</p>`
+    return `<h3>${station.name}</h3><p>No hay autobuses activos previstos</p>`
   }
 
   const items = arrivals
-    .map((arrival) => `<li><b>${arrival.minutes} min</b> - ${resolveLineName(arrival.lineRef)}</li>`)
+    .map(
+      (arrival) => `<li><b>${arrival.minutes} min</b> - ${resolveLineName(arrival.lineRef)}</li>`,
+    )
     .join('')
 
   return `<h3>${station.name}</h3><ul class="arrivals-list">${items}</ul>`
@@ -26,23 +28,24 @@ export function buildBusPopup(
 ): string {
   const stateLabel =
     renderState === 'moving'
-      ? 'Moving estimate'
+      ? 'Estimación en movimiento'
       : renderState === 'holding'
-        ? 'Holding at stop'
-        : 'Ambiguous estimate'
+        ? 'Detenido en parada'
+        : 'Estimación ambigua'
 
   return `
-    <b>Bus #${busId}</b><br/>
+    <b>Autobús #${busId}</b><br/>
     ${lineName}<br/>
-    State: <b>${stateLabel}</b><br/>
-    Confidence: <b>${confidenceLabel}</b><br/>
-    Next stop: <b>${prediction.station.name}</b> in ${prediction.minutes} mins
+    Estado: <b>${stateLabel}</b><br/>
+    Confianza: <b>${confidenceLabel}</b><br/>
+    Próxima parada: <b>${prediction.station.name}</b> en ${prediction.minutes} min
   `
 }
 
 export function formatTimestamp(value: Date): string {
-  return value.toLocaleTimeString([], {
+  return value.toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   })
 }

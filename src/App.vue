@@ -1,76 +1,97 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css'
+
+import { ref } from 'vue'
+
+import DiagnosticsPanel from './components/DiagnosticsPanel.vue'
+import ErrorBanner from './components/ErrorBanner.vue'
+import MapHeader from './components/MapHeader.vue'
 import { useTransitMap } from './composables/useTransitMap'
+import { MOBILE_MEDIA_QUERY } from './config/ui'
+import { isDebugEnabled } from './utils/debug'
 
 const { diagnostics, errorMessage, isLoading, statusText } = useTransitMap()
-const debugEnabled =
-  import.meta.env.DEV || new URLSearchParams(window.location.search).get('debug') === '1'
+const debugEnabled = isDebugEnabled()
+const isMobileViewport =
+  typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches
+const debugPanelOpen = ref(!isMobileViewport)
 </script>
 
 <template>
   <div class="app-container">
-    <div
-      v-if="isLoading"
-      class="glass-loader"
-    >
+    <div v-if="isLoading" class="glass-loader">
       <div class="spinner" />
-      <h2>Loading Leioa Network...</h2>
+      <h2>Cargando red de Leioa...</h2>
     </div>
 
     <div id="map" />
 
-    <header class="glass-header">
-      <div>
-        <h1>Leioa Bus Live</h1>
-        <p>Real-time network overview</p>
-      </div>
-      <span class="status-pill">{{ statusText }}</span>
-    </header>
+    <MapHeader :status-text="statusText" />
 
-    <aside
-      v-if="errorMessage"
-      class="error-banner"
-    >
-      <strong>Live service degraded.</strong>
-      <span>{{ errorMessage }}</span>
-    </aside>
+    <ErrorBanner v-if="errorMessage" :message="errorMessage" />
 
-    <aside
-      v-if="debugEnabled && diagnostics.length > 0"
-      class="debug-panel"
-    >
-      <h2>Tracking diagnostics</h2>
-      <ul class="debug-list">
-        <li
-          v-for="diagnostic in diagnostics"
-          :key="diagnostic.trackingKey"
-          class="debug-item"
-        >
-          <strong>Bus {{ diagnostic.busId }} · {{ diagnostic.lineName }}</strong>
-          <span>{{ diagnostic.previousStopName }} -> {{ diagnostic.nextStopName }}</span>
-          <span>Render state: {{ diagnostic.renderState }}</span>
-          <span>ETA next: {{ diagnostic.minutesToNextStop }} min</span>
-          <span>Segment: {{ diagnostic.estimatedSegmentMinutes }} min</span>
-          <span>Progress: {{ diagnostic.progressRatio }}</span>
-          <span>Confidence: {{ diagnostic.confidenceLabel }} ({{ diagnostic.confidenceScore }})</span>
-          <span>Repeated polls: {{ diagnostic.repeatedPolls }}</span>
-          <span>Same stop polls: {{ diagnostic.sameStopPolls }}</span>
-          <span>Low ETA plateau polls: {{ diagnostic.lowEtaPlateauPolls }}</span>
-          <span>Route continuity: {{ diagnostic.routeContinuityScore }}</span>
-          <span>ETA stability: {{ diagnostic.etaStabilityScore }}</span>
-          <span>Plateau score: {{ diagnostic.plateauScore }}</span>
-          <span>Context score: {{ diagnostic.contextScore }}</span>
-          <span>Same-stop overlap: {{ diagnostic.sameStopOverlapCount }}</span>
-          <span>Low ETA overlap: {{ diagnostic.lowEtaSameStopOverlapCount }}</span>
-          <span v-if="diagnostic.hotspotLabel">Hotspot: {{ diagnostic.hotspotLabel }}</span>
-          <span v-if="diagnostic.hotspotPenalty > 0">Hotspot penalty: {{ diagnostic.hotspotPenalty }}</span>
-          <span>ETA increase streak: {{ diagnostic.sameStopEtaIncreaseCount }}</span>
-          <span>Large jump streak: {{ diagnostic.largeEtaJumpCount }}</span>
-          <span>Route gaps: {{ diagnostic.routeGapCount }}</span>
-          <span v-if="diagnostic.isGhostCandidate">Ghost candidate</span>
-          <span v-if="diagnostic.isSuppressed">Suppressed: {{ diagnostic.suppressionReason }}</span>
-        </li>
-      </ul>
-    </aside>
+    <DiagnosticsPanel
+      :debug-enabled="debugEnabled"
+      :diagnostics="diagnostics"
+      :is-open="debugPanelOpen"
+      @open="debugPanelOpen = true"
+      @close="debugPanelOpen = false"
+    />
   </div>
 </template>
+
+<style scoped>
+.glass-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(247, 249, 252, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-loader h2 {
+  margin-top: 24px;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--glass-border);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+</style>

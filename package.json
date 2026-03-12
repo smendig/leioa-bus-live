@@ -4,18 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "capture:live": "node scripts/capture-live-snapshots.mjs",
-    "capture:session": "node scripts/capture-live-session.mjs",
-    "analyze:live": "node scripts/analyze-live-snapshots.mjs",
-    "analyze:session": "node scripts/analyze-session-advanced.mjs",
-    "research:heuristics": "node scripts/research-tracking-heuristics.mjs",
-    "research:operations": "node scripts/research-operational-patterns.mjs",
-    "docs:validate": "node scripts/validate-doc-registry.mjs",
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "check": "npm run typecheck && npm run lint && npm run format:check"
   },
   "dependencies": {
     "@mapbox/polyline": "^1.2.1",
@@ -29,12 +26,17 @@
     "@types/crypto-js": "^4.2.2",
     "@types/leaflet": "^1.9.21",
     "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/eslint-config-typescript": "^14.7.0",
     "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^17.4.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^7.3.1",
+    "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.0.7"
   }
 }

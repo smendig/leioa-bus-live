@@ -18,5 +18,3 @@ npm run dev
 - Bus positions are estimated from arrivals data, not raw GPS.
 - Debug panel is hidden by default in production. Use `?debug=1` to show it.
 - See [DISCLAIMER.md](DISCLAIMER.md) for legal/disclosure notes.
-
-## More

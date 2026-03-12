@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { defineConfig } from 'vite'
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true'
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1]

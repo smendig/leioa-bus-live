@@ -1,13 +1,67 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>leioabusa-web</title>
+    <title>Leioa Bus Live | Mapa de autobuses en tiempo real</title>
+    <meta
+      name="description"
+      content="Mapa de autobuses en tiempo real para Leioa, con posiciones de vehículos y llegadas a paradas. Adaptado para móvil y actualizado de forma continua."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#004e4d" />
+    <link rel="canonical" href="https://smendig.github.io/leioa-bus-live/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Leioa Bus Live | Mapa de autobuses en tiempo real" />
+    <meta
+      property="og:description"
+      content="Mapa de autobuses en tiempo real para Leioa, con posiciones de vehículos y llegadas a paradas."
+    />
+    <meta property="og:url" content="https://smendig.github.io/leioa-bus-live/" />
+    <meta property="og:image" content="https://smendig.github.io/leioa-bus-live/bus-location.png" />
+    <meta property="og:image:alt" content="Icono de ubicación de autobús" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Leioa Bus Live | Mapa de autobuses en tiempo real" />
+    <meta
+      name="twitter:description"
+      content="Mapa de autobuses en tiempo real para Leioa, con posiciones de vehículos y llegadas a paradas."
+    />
+    <meta
+      name="twitter:image"
+      content="https://smendig.github.io/leioa-bus-live/bus-location.png"
+    />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="icon" type="image/png" href="./bus-location.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Leioa Bus Live",
+        "url": "https://smendig.github.io/leioa-bus-live/",
+        "applicationCategory": "TravelApplication",
+        "description": "Mapa de autobuses en tiempo real para Leioa, con posiciones de vehículos y llegadas a paradas.",
+        "inLanguage": "es",
+        "areaServed": {
+          "@type": "Place",
+          "name": "Leioa, Bizkaia, España"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <section>
+        <h1>Leioa Bus Live</h1>
+        <p>
+          Mapa de autobuses en tiempo real para Leioa, con posiciones de vehículos y estimaciones de
+          llegada a paradas.
+        </p>
+      </section>
+    </noscript>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

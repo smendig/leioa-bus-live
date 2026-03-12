@@ -1,6 +1,6 @@
 import {
-  EMPIRICAL_SEGMENT_PRIORS_MINUTES,
   ELAPSED_TIMEOUT_EXTRA_MINUTES,
+  EMPIRICAL_SEGMENT_PRIORS_MINUTES,
   GHOST_BUS_GRACE_MINUTES,
   LOW_ETA_GHOST_POLLS,
   LOW_ETA_PLATEAU_MAX_MINUTES,
@@ -11,36 +11,36 @@ import {
   TRACKING_HOTSPOT_PRIORS,
   TRACKING_VOLATILE_STOP_PRIORS,
 } from '../config/transit'
-import type { Line } from '../types/transit'
 import type {
   ActiveBusGroup,
+  BusConfidenceLabel,
+  BusPrediction,
   BusRenderState,
   BusTrackingDiagnostic,
-  StationArrivals,
-  BusPrediction,
-  BusConfidenceLabel,
   GhostBusState,
   GhostSuppressionReason,
   InterpolationState,
   PredictionHistoryState,
   ResolvedBusSegment,
+  StationArrivals,
 } from '../types/tracking'
+import type { Line } from '../types/transit'
 
-export type BusConfidenceComponents = {
+export interface BusConfidenceComponents {
   routeContinuityScore: number
   etaStabilityScore: number
   plateauScore: number
   contextScore: number
 }
 
-export type BusSnapshotContext = {
+export interface BusSnapshotContext {
   hotspotLabel: string | null
   hotspotPenalty: number
   sameStopOverlapCount: number
   lowEtaSameStopOverlapCount: number
 }
 
-export type BusConfidenceAssessment = {
+export interface BusConfidenceAssessment {
   score: number
   label: BusConfidenceLabel
   routeGapCount: number
@@ -83,7 +83,9 @@ export function collectActiveBuses(results: StationArrivals[]): ActiveBusGroup[]
   return [...buses.values()]
 }
 
-export function buildSnapshotContext(activeBusGroups: ActiveBusGroup[]): Map<string, BusSnapshotContext> {
+export function buildSnapshotContext(
+  activeBusGroups: ActiveBusGroup[],
+): Map<string, BusSnapshotContext> {
   const sameStopCounts = new Map<string, number>()
   const sameStopLowEtaCounts = new Map<string, number>()
 
@@ -192,7 +194,10 @@ export function isGhostPrediction(
   )
 }
 
-export function resolveBusSegment(line: Line, predictions: BusPrediction[]): ResolvedBusSegment | null {
+export function resolveBusSegment(
+  line: Line,
+  predictions: BusPrediction[],
+): ResolvedBusSegment | null {
   if (line.stops.length < 2 || predictions.length === 0) {
     return null
   }
@@ -261,16 +266,24 @@ export function assessPredictionConfidence(
   const normalizedScore = Number(
     clampScore(
       routeContinuityScore * 0.25 +
-      etaStabilityScore * 0.2 +
-      plateauScore * 0.35 +
-      contextScore * 0.2,
+        etaStabilityScore * 0.2 +
+        plateauScore * 0.35 +
+        contextScore * 0.2,
     ).toFixed(2),
   )
 
+  const hasLowEtaOverlap = snapshotContext.lowEtaSameStopOverlapCount > 0
+  const hasHotspotPressure = snapshotContext.hotspotPenalty >= 0.16
   const isHardFreezeCandidate =
-    history.repeatedPolls >= LOW_ETA_GHOST_POLLS && history.lastMinutes <= LOW_ETA_PLATEAU_MAX_MINUTES
+    history.repeatedPolls >= LOW_ETA_GHOST_POLLS &&
+    history.sameStopPolls >= LOW_ETA_GHOST_POLLS &&
+    history.lastMinutes <= LOW_ETA_PLATEAU_MAX_MINUTES &&
+    (hasLowEtaOverlap || snapshotContext.hotspotPenalty >= 0.22)
   const isSoftPlateauCandidate =
-    history.lowEtaPlateauPolls >= LOW_ETA_GHOST_POLLS && plateauScore <= 0.15 && normalizedScore <= 0.25
+    history.lowEtaPlateauPolls >= LOW_ETA_GHOST_POLLS + 4 &&
+    plateauScore <= 0.12 &&
+    normalizedScore <= 0.22 &&
+    (hasLowEtaOverlap || hasHotspotPressure)
   const isGhostCandidate = isHardFreezeCandidate || isSoftPlateauCandidate
 
   const ghostReason = isGhostCandidate ? 'low_eta_plateau' : null
@@ -297,6 +310,7 @@ export function resolveBusRenderState(
   prediction: BusPrediction,
   resolvedSegment: ResolvedBusSegment | null,
   confidence: BusConfidenceAssessment,
+  history: PredictionHistoryState,
   successfulPollCount: number,
 ): BusRenderState {
   if (!resolvedSegment) {
@@ -304,25 +318,39 @@ export function resolveBusRenderState(
   }
 
   const lowEta = prediction.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES
+  const isLamiaKoHotspot = prediction.lineRef === 'L.1 LEIOA' && prediction.station.id === '342'
   const hasHotspotRisk = confidence.context.hotspotPenalty >= 0.18
   const hasLowEtaOverlap = confidence.context.lowEtaSameStopOverlapCount > 0
   const hasSameStopOverlap = confidence.context.sameStopOverlapCount > 0
   const bootstrapConfirmed = successfulPollCount >= MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT
-  const strongColdStartCandidate =
-    confidence.score >= 0.72 &&
-    confidence.components.routeContinuityScore >= 0.75 &&
-    confidence.components.contextScore >= 0.75 &&
+  const hasEarlyStationChange = history.pollsObserved <= 3 && history.stationChanges > 0
+  const continuityLooksGood =
+    confidence.score >= 0.68 &&
+    confidence.components.routeContinuityScore >= 0.7 &&
+    confidence.components.contextScore >= 0.62 &&
     confidence.routeGapCount <= 2 &&
-    !hasLowEtaOverlap &&
-    !lowEta
+    !hasLowEtaOverlap
+  const settledSameStopSignal =
+    history.pollsObserved >= 3 &&
+    history.stationChanges === 0 &&
+    prediction.minutes > LOW_ETA_PLATEAU_MAX_MINUTES &&
+    continuityLooksGood
 
-  if (lowEta && (hasHotspotRisk || hasLowEtaOverlap || confidence.label === 'low')) {
+  if (hasEarlyStationChange) {
+    return 'moving'
+  }
+
+  if (isLamiaKoHotspot && lowEta) {
     return 'holding'
   }
 
   if (!bootstrapConfirmed) {
-    if (strongColdStartCandidate) {
+    if (settledSameStopSignal || (!lowEta && continuityLooksGood)) {
       return 'moving'
+    }
+
+    if (lowEta && continuityLooksGood && !hasHotspotRisk && !hasLowEtaOverlap) {
+      return 'ambiguous'
     }
 
     return lowEta ? 'holding' : 'ambiguous'
@@ -332,8 +360,23 @@ export function resolveBusRenderState(
     return lowEta ? 'holding' : 'ambiguous'
   }
 
-  if (hasHotspotRisk && lowEta) {
-    return 'holding'
+  if (lowEta) {
+    const lowEtaLooksPlausible =
+      confidence.score >= 0.62 &&
+      confidence.components.contextScore >= 0.6 &&
+      confidence.routeGapCount <= 2 &&
+      !hasLowEtaOverlap &&
+      !hasHotspotRisk
+
+    if (lowEtaLooksPlausible && (history.stationChanges > 0 || history.pollsObserved >= 4)) {
+      return 'moving'
+    }
+
+    if (hasLowEtaOverlap || hasHotspotRisk) {
+      return 'holding'
+    }
+
+    return 'ambiguous'
   }
 
   if (hasLowEtaOverlap || hasSameStopOverlap || confidence.routeGapCount >= 3) {
@@ -350,6 +393,11 @@ export function updatePredictionHistory(
 ): PredictionHistoryState {
   const previousState = state.get(trackingKey)
   const sameStation = previousState?.lastStationId === prediction.station.id
+  const pollsObserved = previousState ? previousState.pollsObserved + 1 : 1
+  const stationChanges =
+    previousState && !sameStation
+      ? previousState.stationChanges + 1
+      : (previousState?.stationChanges ?? 0)
   const etaDelta = previousState ? prediction.minutes - previousState.lastMinutes : 0
   const sameStopPolls = previousState && sameStation ? previousState.sameStopPolls + 1 : 1
   const lowEtaPlateauPolls =
@@ -361,7 +409,9 @@ export function updatePredictionHistory(
   const sameStopEtaIncreaseCount =
     previousState && sameStation && etaDelta > 0 ? previousState.sameStopEtaIncreaseCount + 1 : 0
   const largeEtaJumpCount =
-    previousState && sameStation && Math.abs(etaDelta) >= 3 ? previousState.largeEtaJumpCount + 1 : 0
+    previousState && sameStation && Math.abs(etaDelta) >= 3
+      ? previousState.largeEtaJumpCount + 1
+      : 0
 
   if (
     previousState &&
@@ -369,6 +419,8 @@ export function updatePredictionHistory(
     previousState.lastStationId === prediction.station.id
   ) {
     const nextState = {
+      pollsObserved,
+      stationChanges,
       repeatedPolls: previousState.repeatedPolls + 1,
       lastMinutes: prediction.minutes,
       lastStationId: prediction.station.id,
@@ -382,6 +434,8 @@ export function updatePredictionHistory(
   }
 
   const nextState = {
+    pollsObserved,
+    stationChanges,
     repeatedPolls: 1,
     lastMinutes: prediction.minutes,
     lastStationId: prediction.station.id,
@@ -399,7 +453,10 @@ export function resolveSuppressionReason(
   elapsedMinutes: number,
   confidence: BusConfidenceAssessment,
 ): GhostSuppressionReason | null {
-  if (elapsedMinutes > prediction.minutes + GHOST_BUS_GRACE_MINUTES + ELAPSED_TIMEOUT_EXTRA_MINUTES) {
+  if (
+    elapsedMinutes >
+    prediction.minutes + GHOST_BUS_GRACE_MINUTES + ELAPSED_TIMEOUT_EXTRA_MINUTES
+  ) {
     return 'elapsed_timeout'
   }
 
@@ -410,7 +467,7 @@ export function resolveSuppressionReason(
   return null
 }
 
-type BuildBusTrackingDiagnosticArgs = {
+interface BuildBusTrackingDiagnosticArgs {
   trackingKey: string
   busId: string
   lineName: string
@@ -446,6 +503,8 @@ export function buildBusTrackingDiagnostic({
     previousStopName: resolvedSegment?.previousStop.name ?? 'Unknown',
     nextStopName: resolvedSegment?.nextStop.name ?? prediction.station.name,
     renderState,
+    pollsObserved: historyState.pollsObserved,
+    stationChanges: historyState.stationChanges,
     minutesToNextStop: Number(exactMinutesAway.toFixed(2)),
     estimatedSegmentMinutes: Number((resolvedSegment?.estimatedSegmentMinutes ?? 0).toFixed(2)),
     progressRatio: Number(segmentProgress.toFixed(2)),
@@ -491,7 +550,9 @@ function estimateSegmentMinutes(
   const nextAdjacentStopIndex = getWrappedIndex(nextStopIndex + 1, line.stops.length)
   const nextAdjacentStopId = line.stops[nextAdjacentStopIndex]?.id
 
-  const adjacentPrediction = predictions.find((prediction) => prediction.station.id === nextAdjacentStopId)
+  const adjacentPrediction = predictions.find(
+    (prediction) => prediction.station.id === nextAdjacentStopId,
+  )
   if (adjacentPrediction) {
     return Math.max(1, adjacentPrediction.minutes - predictions[0].minutes)
   }
@@ -505,7 +566,7 @@ function estimateSegmentMinutes(
     .sort((left, right) => left.prediction.minutes - right.prediction.minutes)
 
   const adjacentDeltas: number[] = []
-  const localAdjacentDeltas: Array<{ delta: number; distanceToTarget: number }> = []
+  const localAdjacentDeltas: { delta: number; distanceToTarget: number }[] = []
 
   for (let index = 0; index < orderedPredictions.length - 1; index += 1) {
     const current = orderedPredictions[index]
@@ -536,8 +597,7 @@ function estimateSegmentMinutes(
     return Math.max(1, average(nearestLocalDeltas))
   }
 
-  const averageDelta =
-    average(adjacentDeltas)
+  const averageDelta = average(adjacentDeltas)
 
   return Math.max(1, averageDelta)
 }
@@ -588,5 +648,7 @@ function getNearestPrediction(predictions: BusPrediction[]): BusPrediction | nul
     return null
   }
 
-  return predictions.reduce((nearest, current) => (current.minutes < nearest.minutes ? current : nearest))
+  return predictions.reduce((nearest, current) =>
+    current.minutes < nearest.minutes ? current : nearest,
+  )
 }

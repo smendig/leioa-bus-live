@@ -1,4 +1,5 @@
 import CryptoJS from 'crypto-js'
+
 import type { Arrival, Line, LineStop, Station, Topology } from '../types/transit'
 
 const API_URL = getRequiredEnv('VITE_BUS_API_URL').replace(/\/+$/, '')
@@ -143,7 +144,7 @@ export async function getTopology(): Promise<Topology> {
   ])
 
   if (linesData?.Error !== '0' || stationsData?.Error !== '0') {
-    throw new Error('Failed to fetch Leioa topology')
+    throw new Error('No se ha podido obtener la topología de Leioa')
   }
 
   return {

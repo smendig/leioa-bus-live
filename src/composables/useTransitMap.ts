@@ -1,5 +1,7 @@
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import L from 'leaflet'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+
+import busLocationIconUrl from '../assets/bus-location.png'
 import {
   LINE_COLORS,
   MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT,
@@ -7,37 +9,41 @@ import {
   MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT,
   MAP_DEFAULT_CENTER,
   MAP_POLL_INTERVAL_MS,
+  NO_SERVICE_LOCAL_HOURS,
+  NO_SERVICE_LOCAL_TIMEZONE,
+  NO_SERVICE_ZERO_ACTIVE_POLLS_DAY,
+  NO_SERVICE_ZERO_ACTIVE_POLLS_NIGHT,
 } from '../config/transit'
+import { MOBILE_MEDIA_QUERY } from '../config/ui'
 import { getArrivals, getTopology } from '../services/api'
 import { decodeLineGeometry, getDisplayGeometry, resolveMarkerPosition } from '../services/geo'
-import type { Line, Station } from '../types/transit'
 import type {
   ActiveBusGroup,
-  BusTrackingDiagnostic,
   BusPrediction,
-  GhostSuppressionReason,
+  BusTrackingDiagnostic,
   GhostBusState,
+  GhostSuppressionReason,
   InterpolationState,
   LineWithGeometry,
   PredictionHistoryState,
   StationArrivals,
 } from '../types/tracking'
-import { buildArrivalsPopup, buildBusPopup, formatTimestamp } from '../utils/transitFormatters'
-import busLocationIconUrl from '../assets/bus-location.png'
+import type { Line, Station } from '../types/transit'
 import {
-  EMPTY_SNAPSHOT_CONTEXT,
   assessPredictionConfidence,
   buildBusTrackingDiagnostic,
   buildSnapshotContext,
   calculateSegmentProgress,
   collectActiveBuses,
+  EMPTY_SNAPSHOT_CONTEXT,
   isGhostPrediction,
-  resolveBusSegment,
   resolveBusRenderState,
+  resolveBusSegment,
   resolveElapsedMinutes,
   resolveSuppressionReason,
   updatePredictionHistory,
 } from '../utils/tracking'
+import { buildArrivalsPopup, buildBusPopup, formatTimestamp } from '../utils/transitFormatters'
 
 const MAP_ELEMENT_ID = 'map'
 const BUS_MARKER_ICON_SIZE = [72, 48] as const
@@ -55,6 +61,10 @@ export function useTransitMap() {
   const lastUpdatedAt = ref<Date | null>(null)
   const diagnostics = ref<BusTrackingDiagnostic[]>([])
   const bootstrapSampleCount = ref(0)
+  const activeBusCount = ref(0)
+  const zeroActivePolls = ref(0)
+  const hasObservedActiveBus = ref(false)
+  const noServiceLikely = ref(false)
 
   const stationsCache = ref<Station[]>([])
   const linesCache = ref<LineWithGeometry[]>([])
@@ -70,32 +80,45 @@ export function useTransitMap() {
 
   const statusText = computed(() => {
     if (errorMessage.value) {
-      return 'Connection issue'
+      return 'Problema de conexión'
     }
 
     if (isLoading.value) {
-      return 'Loading network'
+      return 'Cargando red'
     }
 
     if (!lastUpdatedAt.value) {
-      return 'Waiting for live data'
+      if (noServiceLikely.value) {
+        return 'Sin servicio ahora'
+      }
+
+      return 'Buscando autobuses'
+    }
+
+    if (noServiceLikely.value && activeBusCount.value === 0) {
+      return 'Sin servicio ahora'
+    }
+
+    if (activeBusCount.value === 0) {
+      return `Sin buses · ${formatTimestamp(lastUpdatedAt.value)}`
     }
 
     if (bootstrapSampleCount.value < MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT) {
-      return `Bootstrapping live view ${bootstrapSampleCount.value}/${MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT}`
+      return `Iniciando ${bootstrapSampleCount.value}/${MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT}`
     }
 
-    return `Updated ${formatTimestamp(lastUpdatedAt.value)}`
+    return `Act. ${formatTimestamp(lastUpdatedAt.value)}`
   })
 
   const resolveLineName = (lineRef: string): string =>
     linesCache.value.find((line) => line.ref === lineRef)?.name ?? lineRef
 
   onMounted(async () => {
-    map.value = L.map(MAP_ELEMENT_ID).setView(
-      [MAP_DEFAULT_CENTER.lat, MAP_DEFAULT_CENTER.lng],
-      MAP_DEFAULT_CENTER.zoom,
-    )
+    const isMobileViewport = window.matchMedia(MOBILE_MEDIA_QUERY).matches
+
+    map.value = L.map(MAP_ELEMENT_ID, {
+      zoomControl: false,
+    }).setView([MAP_DEFAULT_CENTER.lat, MAP_DEFAULT_CENTER.lng], MAP_DEFAULT_CENTER.zoom)
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
@@ -103,13 +126,15 @@ export function useTransitMap() {
       maxZoom: 19,
     }).addTo(map.value)
 
+    L.control.zoom({ position: isMobileViewport ? 'bottomright' : 'topright' }).addTo(map.value)
+
     setupMapPanes(map.value)
 
     try {
       await loadTopology()
       startPolling()
     } catch (error) {
-      handleError(error, 'Failed to load the Leioa transit network.')
+      handleError(error, 'No se ha podido cargar la red de transporte de Leioa.')
     } finally {
       isLoading.value = false
     }
@@ -165,7 +190,7 @@ export function useTransitMap() {
         riseOnHover: true,
       })
         .addTo(mapInstance)
-        .bindPopup('<div class="popup-loading">Fetching live buses...</div>')
+        .bindPopup('<div class="popup-loading">Cargando autobuses en tiempo real...</div>')
 
       marker.on('popupopen', () => {
         void loadStationPopup(marker, station)
@@ -203,11 +228,12 @@ export function useTransitMap() {
 
       const successfulPollCount = registerSuccessfulPoll()
       const activeBusGroups = collectActiveBuses(results)
+      registerActiveBusWindow(activeBusGroups.length)
       syncBusMarkers(activeBusGroups, successfulPollCount)
       lastUpdatedAt.value = new Date()
       errorMessage.value = null
     } catch (error) {
-      handleError(error, 'Live arrivals are temporarily unavailable.')
+      handleError(error, 'Las llegadas en tiempo real no están disponibles temporalmente.')
     } finally {
       isPolling = false
     }
@@ -256,6 +282,7 @@ export function useTransitMap() {
         closestPrediction,
         resolvedSegment,
         confidence,
+        historyState,
         successfulPollCount,
       )
       const suppressionReason = resolveSuppressionReason(
@@ -453,7 +480,7 @@ export function useTransitMap() {
       return existingRequest
     }
 
-    marker.setPopupContent('<div class="popup-loading">Fetching live buses...</div>')
+    marker.setPopupContent('<div class="popup-loading">Cargando autobuses en tiempo real...</div>')
 
     const request = (async () => {
       try {
@@ -467,7 +494,7 @@ export function useTransitMap() {
       } catch (error) {
         console.error(error)
         marker.setPopupContent(
-          `<h3>${station.name}</h3><p class="popup-error">Unable to load live arrivals.</p>`,
+          `<h3>${station.name}</h3><p class="popup-error">No se han podido cargar las llegadas en tiempo real.</p>`,
         )
       } finally {
         stationPopupRequests.delete(station.id)
@@ -485,6 +512,32 @@ export function useTransitMap() {
     )
 
     return bootstrapSampleCount.value
+  }
+
+  function registerActiveBusWindow(activeCount: number): void {
+    activeBusCount.value = activeCount
+
+    if (activeCount > 0) {
+      hasObservedActiveBus.value = true
+      zeroActivePolls.value = 0
+      noServiceLikely.value = false
+      return
+    }
+
+    zeroActivePolls.value += 1
+
+    if (hasObservedActiveBus.value) {
+      noServiceLikely.value = false
+      return
+    }
+
+    const localHour = getLocalHourInTimeZone(new Date(), NO_SERVICE_LOCAL_TIMEZONE)
+    const isNoServiceHour = (NO_SERVICE_LOCAL_HOURS as readonly number[]).includes(localHour)
+    const threshold = isNoServiceHour
+      ? NO_SERVICE_ZERO_ACTIVE_POLLS_NIGHT
+      : NO_SERVICE_ZERO_ACTIVE_POLLS_DAY
+
+    noServiceLikely.value = zeroActivePolls.value >= threshold
   }
 
   return {
@@ -509,9 +562,35 @@ function enrichLine(line: Line): LineWithGeometry {
 
 function setupMapPanes(mapInstance: L.Map): void {
   mapInstance.createPane('linesPane')
-  mapInstance.getPane('linesPane')!.style.zIndex = '400'
+  const linesPane = mapInstance.getPane('linesPane')
+  if (linesPane) {
+    linesPane.style.zIndex = '400'
+  }
+
   mapInstance.createPane('stationsPane')
-  mapInstance.getPane('stationsPane')!.style.zIndex = '500'
+  const stationsPane = mapInstance.getPane('stationsPane')
+  if (stationsPane) {
+    stationsPane.style.zIndex = '500'
+  }
+
   mapInstance.createPane('busesPane')
-  mapInstance.getPane('busesPane')!.style.zIndex = '600'
+  const busesPane = mapInstance.getPane('busesPane')
+  if (busesPane) {
+    busesPane.style.zIndex = '600'
+  }
+}
+
+function getLocalHourInTimeZone(date: Date, timeZone: string): number {
+  const hourText = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour: '2-digit',
+    hour12: false,
+  }).format(date)
+
+  const parsedHour = Number.parseInt(hourText, 10)
+  if (Number.isNaN(parsedHour)) {
+    return date.getUTCHours()
+  }
+
+  return parsedHour % 24
 }

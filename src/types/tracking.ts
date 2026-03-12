@@ -1,17 +1,17 @@
-import type { Arrival, Line, LineStop, Station } from './transit'
 import type { RouteLine } from '../services/geo'
+import type { Arrival, Line, LineStop, Station } from './transit'
 
 export type LineWithGeometry = Line & {
   geoJson: RouteLine
 }
 
-export type BusPrediction = {
+export interface BusPrediction {
   station: Station
   minutes: number
   lineRef: string
 }
 
-export type ActiveBusGroup = {
+export interface ActiveBusGroup {
   trackingKey: string
   busId: string
   lineRef: string
@@ -22,19 +22,21 @@ export type BusRenderState = 'moving' | 'holding' | 'ambiguous'
 export type BusConfidenceLabel = 'high' | 'medium' | 'low'
 export type GhostSuppressionReason = 'elapsed_timeout' | 'low_eta_plateau'
 
-export type GhostBusState = {
+export interface GhostBusState {
   minutes: number
   stationId: string
   reason: GhostSuppressionReason
 }
 
-export type InterpolationState = {
+export interface InterpolationState {
   reportedMinutes: number
   targetStationId: string
   localStartTime: number
 }
 
-export type PredictionHistoryState = {
+export interface PredictionHistoryState {
+  pollsObserved: number
+  stationChanges: number
   repeatedPolls: number
   lastMinutes: number
   lastStationId: string
@@ -44,24 +46,26 @@ export type PredictionHistoryState = {
   largeEtaJumpCount: number
 }
 
-export type StationArrivals = {
+export interface StationArrivals {
   station: Station
   arrivals: Arrival[]
 }
 
-export type ResolvedBusSegment = {
+export interface ResolvedBusSegment {
   previousStop: LineStop
   nextStop: LineStop
   estimatedSegmentMinutes: number
 }
 
-export type BusTrackingDiagnostic = {
+export interface BusTrackingDiagnostic {
   trackingKey: string
   busId: string
   lineName: string
   previousStopName: string
   nextStopName: string
   renderState: BusRenderState
+  pollsObserved: number
+  stationChanges: number
   minutesToNextStop: number
   estimatedSegmentMinutes: number
   progressRatio: number
