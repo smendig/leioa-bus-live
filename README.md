@@ -20,3 +20,11 @@ npm run dev
   [docs/tracking-model.md](docs/tracking-model.md).
 - Debug panel is hidden by default in production. Use `?debug=1` to show it.
 - See [DISCLAIMER.md](DISCLAIMER.md) for legal/disclosure notes.
+
+## Validate the tracking model
+
+With a local sharded capture, run:
+
+```bash
+npm run tracking:validate -- captures/sessions/<session-id> --cutoff=<ISO-date>
+```

@@ -8,6 +8,7 @@ import {
   collectActiveBuses,
   EMPTY_SNAPSHOT_CONTEXT,
   resolveBusSegment,
+  resolveMissingBus,
   resolveSegmentProgress,
   resolveSuppressionReason,
   updatePredictionHistory,
@@ -48,6 +49,15 @@ describe('collectActiveBuses', () => {
     ]
 
     expect(collectActiveBuses(results).map((group) => group.busId)).toEqual(['306'])
+  })
+})
+
+describe('temporary disappearance handling', () => {
+  it('keeps a bus for the grace window and removes it after sustained absence', () => {
+    expect(resolveMissingBus(0, false, 2)).toEqual({ missingPolls: 1, shouldRemove: false })
+    expect(resolveMissingBus(1, false, 2)).toEqual({ missingPolls: 2, shouldRemove: false })
+    expect(resolveMissingBus(2, false, 2)).toEqual({ missingPolls: 3, shouldRemove: true })
+    expect(resolveMissingBus(2, true, 2)).toEqual({ missingPolls: 0, shouldRemove: false })
   })
 })
 

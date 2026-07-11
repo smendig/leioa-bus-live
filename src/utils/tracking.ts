@@ -132,6 +132,21 @@ export interface SegmentProgressResolution {
   predictionAgeSeconds: number
 }
 
+export interface MissingBusResolution {
+  missingPolls: number
+  shouldRemove: boolean
+}
+
+export function resolveMissingBus(
+  previousMissingPolls: number,
+  isActive: boolean,
+  gracePolls: number,
+): MissingBusResolution {
+  if (isActive) return { missingPolls: 0, shouldRemove: false }
+  const missingPolls = previousMissingPolls + 1
+  return { missingPolls, shouldRemove: missingPolls > gracePolls }
+}
+
 const CALIBRATED_REMAINING_MINUTES: Record<number, number> = {
   0: 0.51,
   1: 0.81,

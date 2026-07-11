@@ -8,14 +8,18 @@ import {
   MAP_BOOTSTRAP_POLL_DELAYS_MS,
   MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT,
   MAP_DEFAULT_CENTER,
+  MAP_IDLE_POLL_INTERVAL_MS,
+  MAP_NO_SERVICE_POLL_INTERVAL_MS,
   MAP_POLL_INTERVAL_MS,
+  MISSING_BUS_GRACE_POLLS,
   NO_SERVICE_LOCAL_HOURS,
   NO_SERVICE_LOCAL_TIMEZONE,
   NO_SERVICE_ZERO_ACTIVE_POLLS_DAY,
   NO_SERVICE_ZERO_ACTIVE_POLLS_NIGHT,
+  PARTIAL_SNAPSHOT_WARNING_POLLS,
 } from '../config/transit'
 import { MOBILE_MEDIA_QUERY } from '../config/ui'
-import { getArrivals, getArrivalsDetailed, getTopology } from '../services/api'
+import { getArrivalsDetailed, getTopology } from '../services/api'
 import { decodeLineGeometry, getDisplayGeometry, resolveMarkerPosition } from '../services/geo'
 import type {
   ActiveBusGroup,
@@ -35,6 +39,7 @@ import {
   EMPTY_SNAPSHOT_CONTEXT,
   resolveBusRenderState,
   resolveBusSegment,
+  resolveMissingBus,
   resolveSegmentProgress,
   resolveSuppressionReason,
   updatePredictionHistory,
@@ -61,16 +66,18 @@ export function useTransitMap() {
   const zeroActivePolls = ref(0)
   const hasObservedActiveBus = ref(false)
   const noServiceLikely = ref(false)
+  const consecutivePartialPolls = ref(0)
 
   const stationsCache = ref<Station[]>([])
   const linesCache = ref<LineWithGeometry[]>([])
   const activeBusLayers = new Map<string, L.Marker>()
   const interpolationState = new Map<string, InterpolationState>()
   const predictionHistory = new Map<string, PredictionHistoryState>()
+  const missingBusPolls = new Map<string, number>()
   const stationPopupRequests = new Map<string, Promise<void>>()
   const stationPopupCache = new Map<string, { html: string; loadedAt: number }>()
 
-  let pollIntervalId: number | null = null
+  let scheduledPollTimeoutId: number | null = null
   const bootstrapTimeoutIds: number[] = []
   let isPolling = false
 
@@ -138,6 +145,7 @@ export function useTransitMap() {
     try {
       await loadTopology()
       startPolling()
+      document.addEventListener('visibilitychange', handleVisibilityChange)
     } catch (error) {
       handleError(error, 'No se ha podido cargar la red de transporte de Leioa.')
     } finally {
@@ -146,8 +154,8 @@ export function useTransitMap() {
   })
 
   onBeforeUnmount(() => {
-    if (pollIntervalId !== null) {
-      window.clearInterval(pollIntervalId)
+    if (scheduledPollTimeoutId !== null) {
+      window.clearTimeout(scheduledPollTimeoutId)
     }
 
     bootstrapTimeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId))
@@ -155,8 +163,10 @@ export function useTransitMap() {
     activeBusLayers.clear()
     interpolationState.clear()
     predictionHistory.clear()
+    missingBusPolls.clear()
     stationPopupRequests.clear()
     stationPopupCache.clear()
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
     map.value?.remove()
   })
 
@@ -211,9 +221,31 @@ export function useTransitMap() {
       }, delayMs)
       bootstrapTimeoutIds.push(timeoutId)
     })
-    pollIntervalId = window.setInterval(() => {
-      void pollBuses()
-    }, MAP_POLL_INTERVAL_MS)
+    scheduleNextPoll(MAP_POLL_INTERVAL_MS)
+  }
+
+  function scheduleNextPoll(delayMs = getNextPollDelay()): void {
+    if (scheduledPollTimeoutId !== null) window.clearTimeout(scheduledPollTimeoutId)
+    scheduledPollTimeoutId = window.setTimeout(async () => {
+      scheduledPollTimeoutId = null
+      if (!document.hidden) await pollBuses()
+      scheduleNextPoll()
+    }, delayMs)
+  }
+
+  function getNextPollDelay(): number {
+    if (document.hidden || noServiceLikely.value) return MAP_NO_SERVICE_POLL_INTERVAL_MS
+    return activeBusCount.value > 0 ? MAP_POLL_INTERVAL_MS : MAP_IDLE_POLL_INTERVAL_MS
+  }
+
+  function handleVisibilityChange(): void {
+    if (document.hidden) {
+      scheduleNextPoll(MAP_NO_SERVICE_POLL_INTERVAL_MS)
+      return
+    }
+
+    void pollBuses()
+    scheduleNextPoll()
   }
 
   async function pollBuses(): Promise<void> {
@@ -236,9 +268,15 @@ export function useTransitMap() {
           ? results.filter((result) => result.isSuccessful).length / results.length
           : 0
       if (snapshotCoverageRatio < 1) {
+        consecutivePartialPolls.value += 1
+        if (consecutivePartialPolls.value >= PARTIAL_SNAPSHOT_WARNING_POLLS) {
+          errorMessage.value =
+            'La fuente está respondiendo de forma parcial; se mantiene el último estado completo.'
+        }
         return
       }
 
+      consecutivePartialPolls.value = 0
       const successfulPollCount = registerSuccessfulPoll()
       const activeBusGroups = collectActiveBuses(results)
       registerActiveBusWindow(activeBusGroups.length)
@@ -253,7 +291,7 @@ export function useTransitMap() {
   }
 
   function syncBusMarkers(activeBusGroups: ActiveBusGroup[], successfulPollCount: number): void {
-    removeInactiveBuses(new Set(activeBusGroups.map((group) => group.trackingKey)))
+    reconcileMissingBuses(new Set(activeBusGroups.map((group) => group.trackingKey)))
     const nextDiagnostics: BusTrackingDiagnostic[] = []
     const snapshotContext = buildSnapshotContext(activeBusGroups)
 
@@ -345,6 +383,7 @@ export function useTransitMap() {
         routeLine.name,
         confidence.label,
         renderState,
+        progress.predictionAgeSeconds,
       )
     })
 
@@ -360,15 +399,26 @@ export function useTransitMap() {
     lineName: string,
     confidenceLabel: 'high' | 'medium' | 'low',
     renderState: BusTrackingDiagnostic['renderState'],
+    predictionAgeSeconds: number,
   ): void {
     const existingMarker = activeBusLayers.get(trackingKey)
     const icon = createBusMarkerIcon()
-    const popupContent = buildBusPopup(busId, prediction, lineName, renderState, confidenceLabel)
+    const popupContent = buildBusPopup(
+      busId,
+      prediction,
+      lineName,
+      renderState,
+      confidenceLabel,
+      predictionAgeSeconds,
+    )
+    const opacity = confidenceLabel === 'high' ? 1 : confidenceLabel === 'medium' ? 0.82 : 0.64
 
     if (existingMarker) {
       existingMarker.setLatLng([lat, lng])
       existingMarker.setIcon(icon)
       existingMarker.setPopupContent(popupContent)
+      existingMarker.setOpacity(opacity)
+      missingBusPolls.delete(trackingKey)
       return
     }
 
@@ -384,19 +434,29 @@ export function useTransitMap() {
     }).bindPopup(popupContent)
 
     marker.addTo(mapInstance)
+    marker.setOpacity(opacity)
     activeBusLayers.set(trackingKey, marker)
   }
 
-  function removeInactiveBuses(activeBusIds: Set<string>): void {
+  function reconcileMissingBuses(activeBusIds: Set<string>): void {
     activeBusLayers.forEach((marker, trackingKey) => {
-      if (activeBusIds.has(trackingKey)) {
+      const missing = resolveMissingBus(
+        missingBusPolls.get(trackingKey) ?? 0,
+        activeBusIds.has(trackingKey),
+        MISSING_BUS_GRACE_POLLS,
+      )
+      if (missing.missingPolls === 0) {
+        missingBusPolls.delete(trackingKey)
         return
       }
 
-      marker.remove()
-      activeBusLayers.delete(trackingKey)
-      interpolationState.delete(trackingKey)
-      predictionHistory.delete(trackingKey)
+      if (!missing.shouldRemove) {
+        missingBusPolls.set(trackingKey, missing.missingPolls)
+        marker.setOpacity(0.35)
+        return
+      }
+
+      removeBus(trackingKey)
     })
   }
 
@@ -404,6 +464,7 @@ export function useTransitMap() {
     const marker = activeBusLayers.get(trackingKey)
     marker?.remove()
     activeBusLayers.delete(trackingKey)
+    missingBusPolls.delete(trackingKey)
     if (!preserveTrackingState) {
       interpolationState.delete(trackingKey)
       predictionHistory.delete(trackingKey)
@@ -431,8 +492,9 @@ export function useTransitMap() {
 
     const request = (async () => {
       try {
-        const arrivals = await getArrivals(station.id)
-        const popupHtml = buildArrivalsPopup(station, arrivals, resolveLineName)
+        const result = await getArrivalsDetailed(station.id)
+        if (!result.isSuccessful) throw new Error(`Arrival request failed for stop ${station.id}`)
+        const popupHtml = buildArrivalsPopup(station, result.arrivals, resolveLineName)
         stationPopupCache.set(station.id, {
           html: popupHtml,
           loadedAt: Date.now(),

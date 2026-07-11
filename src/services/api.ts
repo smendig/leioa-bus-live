@@ -7,6 +7,7 @@ const API_URL = getRequiredEnv('VITE_BUS_API_URL').replace(/\/+$/, '')
 const KEY = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_KEY'))
 const IV = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_IV'))
 const IV_B64 = CryptoJS.enc.Base64.stringify(IV)
+const API_REQUEST_TIMEOUT_MS = 10_000
 
 const BASE_PAYLOAD = {
   ApiUser: getRequiredEnv('VITE_BUS_API_USER'),
@@ -106,6 +107,7 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
     const response = await fetch(`${API_URL}${endpoint}?${params.toString()}`, {
       method: 'GET',
       cache: 'no-store',
+      signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_MS),
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
@@ -141,10 +143,6 @@ export async function getTopology(): Promise<Topology> {
     lines: linesData.Lines.map(normalizeLine),
     stations: stationsData.Stops.map(normalizeStation),
   }
-}
-
-export async function getArrivals(spRef: string): Promise<Arrival[]> {
-  return (await getArrivalsDetailed(spRef)).arrivals
 }
 
 export interface ArrivalsResult {

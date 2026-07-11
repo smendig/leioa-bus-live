@@ -27,6 +27,7 @@ export function buildBusPopup(
   lineName: string,
   renderState: BusRenderState,
   confidenceLabel: BusConfidenceLabel,
+  predictionAgeSeconds = 0,
 ): string {
   const stateLabel =
     renderState === 'moving'
@@ -41,6 +42,10 @@ export function buildBusPopup(
       : confidenceLabel === 'medium'
         ? 'predicción aproximada'
         : 'información inestable o antigua'
+  const freshnessLabel =
+    predictionAgeSeconds < 60
+      ? 'Predicción actualizada recientemente'
+      : `Predicción sin cambios desde hace ${Math.max(1, Math.round(predictionAgeSeconds / 60))} min`
 
   return `
     <div class="bus-popup">
@@ -54,7 +59,7 @@ export function buildBusPopup(
         <div><dt>Próxima parada</dt><dd>${escapeHtml(prediction.station.name)}</dd></div>
         <div><dt>Llegada</dt><dd>${prediction.minutes <= 0 ? 'Llegando' : `${prediction.minutes} min`}</dd></div>
       </dl>
-      <p class="bus-popup__note">${confidenceExplanation}</p>
+      <p class="bus-popup__note">${confidenceExplanation}. ${freshnessLabel}.</p>
     </div>
   `
 }

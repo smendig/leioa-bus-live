@@ -47,6 +47,16 @@ another operational signal fed a particular prediction.
 7. Suppression requires prolonged, mutually reinforcing stale signals. Uncertain vehicles remain
    visible in a holding or ambiguous state.
 8. Diagnostics expose prediction age, prior source, uncertainty, and suppression evidence.
+9. A vehicle missing from one or two complete snapshots is retained at its last position with lower
+   opacity. It is removed after a third consecutive absence or restored immediately if it returns.
+
+## Polling and degraded data
+
+- Active service is polled every 15 seconds.
+- An empty but otherwise valid network is polled every 30 seconds.
+- Likely out-of-service periods and hidden browser tabs are polled every 60 seconds.
+- Incomplete snapshots never advance or remove vehicles. After three consecutive partial snapshots,
+  the UI reports degraded source data while retaining the last complete state.
 
 ## Validation
 
@@ -62,3 +72,16 @@ derive priors. Useful metrics are:
 
 Without an external GPS or manual observation reference, replay can validate temporal consistency
 but cannot establish exact map-coordinate accuracy.
+
+Run the chronological validator against a local sharded capture with:
+
+```bash
+npm run tracking:validate -- captures/sessions/<session-id> \
+  --cutoff=2026-06-01T00:00:00.000Z
+```
+
+Add `--emit-priors` to include the training-only P10/P50/P90 table in the JSON output. The cutoff is
+exclusive for training: data before it trains the candidate model and data at or after it remains
+unseen evaluation data.
+
+The latest recorded result is in [tracking-validation-2026-07.md](tracking-validation-2026-07.md).
