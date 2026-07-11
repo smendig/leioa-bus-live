@@ -39,9 +39,9 @@ interface RawDirection {
 }
 
 interface RawArrival {
-  IdBus: string
-  Minutes: string
-  LRef: string
+  IdBus: string | number
+  Minutes: string | number
+  LRef: string | number
   LName: string
 }
 
@@ -189,9 +189,9 @@ function normalizeLine(line: RawLine): Line {
 
 function normalizeArrival(arrival: RawArrival): Arrival {
   return {
-    busId: arrival.IdBus,
-    minutes: Number.parseInt(arrival.Minutes, 10),
-    lineRef: arrival.LRef,
+    busId: String(arrival.IdBus),
+    minutes: Number.parseInt(String(arrival.Minutes), 10),
+    lineRef: String(arrival.LRef),
   }
 }
 

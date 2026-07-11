@@ -67,8 +67,8 @@ export function formatTimestamp(value: Date): string {
   })
 }
 
-function escapeHtml(value: string): string {
-  return value.replace(
+function escapeHtml(value: unknown): string {
+  return String(value).replace(
     /[&<>'"]/g,
     (character) =>
       ({
