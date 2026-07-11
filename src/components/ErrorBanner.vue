@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="error-banner">
+  <aside class="error-banner" role="alert">
     <strong>Servicio en tiempo real degradado.</strong>
     <span>{{ message }}</span>
   </aside>

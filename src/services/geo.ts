@@ -2,7 +2,6 @@ import polyline from '@mapbox/polyline'
 import * as turf from '@turf/turf'
 import type { Feature, LineString, MultiLineString, Position } from 'geojson'
 
-import { BUS_SPEED_KM_PER_MINUTE } from '../config/transit'
 import type { BusRenderState, ResolvedBusSegment } from '../types/tracking'
 import type { LngLat } from '../types/transit'
 
@@ -47,31 +46,6 @@ export function getDisplayGeometry(encodedStr: string): DisplayGeometry {
   }
 
   return turf.multiLineString(multiCoords)
-}
-
-export function calculateBusPosition(
-  lineString: RouteLine,
-  nextStopCoords: LngLat,
-  minutesAway: number,
-): LngLat | null {
-  if (minutesAway < 0) {
-    return null
-  }
-
-  const stopPoint = turf.point(nextStopCoords)
-  const snappedStop = turf.nearestPointOnLine(lineString, stopPoint)
-  const estDistanceKm = minutesAway * BUS_SPEED_KM_PER_MINUTE
-  const distanceToStop = Number(snappedStop.properties.location ?? 0)
-
-  let busDistanceAlongLine = distanceToStop - estDistanceKm
-  if (busDistanceAlongLine < 0) {
-    busDistanceAlongLine = 0
-  }
-
-  const syntheticPosition = turf.along(lineString, busDistanceAlongLine)
-  const [lng, lat] = syntheticPosition.geometry.coordinates
-
-  return [lng, lat]
 }
 
 export function calculateBusPositionOnSegment(

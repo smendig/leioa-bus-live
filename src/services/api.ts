@@ -144,12 +144,25 @@ export async function getTopology(): Promise<Topology> {
 }
 
 export async function getArrivals(spRef: string): Promise<Arrival[]> {
+  return (await getArrivalsDetailed(spRef)).arrivals
+}
+
+export interface ArrivalsResult {
+  arrivals: Arrival[]
+  isSuccessful: boolean
+}
+
+export async function getArrivalsDetailed(spRef: string): Promise<ArrivalsResult> {
   const data = await makeRequest<ArrivalsResponse>('/ArrivalTime', { spRef })
   if (data?.Error !== '0') {
-    return []
+    return { arrivals: [], isSuccessful: false }
   }
 
-  return data.Arrivals.map(normalizeArrival)
+  if (!Array.isArray(data.Arrivals)) {
+    return { arrivals: [], isSuccessful: false }
+  }
+
+  return { arrivals: data.Arrivals.map(normalizeArrival), isSuccessful: true }
 }
 
 function normalizeStation(station: RawStation): Station {

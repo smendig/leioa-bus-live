@@ -16,5 +16,7 @@ npm run dev
 
 - Unofficial project (not affiliated with Leioa municipality).
 - Bus positions are estimated from arrivals data, not raw GPS.
+- The estimation model and its validation boundaries are documented in
+  [docs/tracking-model.md](docs/tracking-model.md).
 - Debug panel is hidden by default in production. Use `?debug=1` to show it.
 - See [DISCLAIMER.md](DISCLAIMER.md) for legal/disclosure notes.

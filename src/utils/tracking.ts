@@ -1,15 +1,12 @@
+import { SEGMENT_DURATION_PRIORS } from '../config/segmentPriors'
 import {
-  ELAPSED_TIMEOUT_EXTRA_MINUTES,
-  EMPIRICAL_SEGMENT_PRIORS_MINUTES,
-  GHOST_BUS_GRACE_MINUTES,
-  LOW_ETA_GHOST_POLLS,
   LOW_ETA_PLATEAU_MAX_MINUTES,
   LOW_ETA_PLATEAU_WARNING_POLLS,
   LOW_ETA_SAME_STOP_OVERLAP_PENALTY,
   MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT,
+  PREDICTION_STALE_WARNING_SECONDS,
   SAME_STOP_OVERLAP_PENALTY,
-  TRACKING_HOTSPOT_PRIORS,
-  TRACKING_VOLATILE_STOP_PRIORS,
+  STALE_PREDICTION_SUPPRESSION_POLLS,
 } from '../config/transit'
 import type {
   ActiveBusGroup,
@@ -17,10 +14,9 @@ import type {
   BusPrediction,
   BusRenderState,
   BusTrackingDiagnostic,
-  GhostBusState,
-  GhostSuppressionReason,
   InterpolationState,
   PredictionHistoryState,
+  PredictionSuppressionReason,
   ResolvedBusSegment,
   StationArrivals,
 } from '../types/tracking'
@@ -31,11 +27,10 @@ export interface BusConfidenceComponents {
   etaStabilityScore: number
   plateauScore: number
   contextScore: number
+  freshnessScore: number
 }
 
 export interface BusSnapshotContext {
-  hotspotLabel: string | null
-  hotspotPenalty: number
   sameStopOverlapCount: number
   lowEtaSameStopOverlapCount: number
 }
@@ -46,13 +41,10 @@ export interface BusConfidenceAssessment {
   routeGapCount: number
   components: BusConfidenceComponents
   context: BusSnapshotContext
-  isGhostCandidate: boolean
-  ghostReason: GhostSuppressionReason | null
+  isStaleCandidate: boolean
 }
 
 export const EMPTY_SNAPSHOT_CONTEXT: BusSnapshotContext = Object.freeze({
-  hotspotLabel: null,
-  hotspotPenalty: 0,
   sameStopOverlapCount: 0,
   lowEtaSameStopOverlapCount: 0,
 })
@@ -62,6 +54,9 @@ export function collectActiveBuses(results: StationArrivals[]): ActiveBusGroup[]
 
   results.forEach((result) => {
     result.arrivals.forEach((arrival) => {
+      if (arrival.busId === '0' || !Number.isFinite(arrival.minutes)) {
+        return
+      }
       const trackingKey = `${arrival.busId}:${arrival.lineRef}`
       if (!buses.has(trackingKey)) {
         buses.set(trackingKey, {
@@ -109,8 +104,6 @@ export function buildSnapshotContext(
     const nearest = getNearestPrediction(group.predictions)
     if (!nearest) {
       contextByTrackingKey.set(group.trackingKey, {
-        hotspotLabel: null,
-        hotspotPenalty: 0,
         sameStopOverlapCount: 0,
         lowEtaSameStopOverlapCount: 0,
       })
@@ -118,27 +111,13 @@ export function buildSnapshotContext(
     }
 
     const stopKey = `${group.lineRef}:${nearest.station.id}`
-    const hotspot = TRACKING_HOTSPOT_PRIORS[stopKey]
-    const volatileStop = TRACKING_VOLATILE_STOP_PRIORS[nearest.station.id]
     const sameStopOverlapCount = Math.max(0, (sameStopCounts.get(stopKey) ?? 0) - 1)
     const lowEtaSameStopOverlapCount =
       nearest.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES
         ? Math.max(0, (sameStopLowEtaCounts.get(stopKey) ?? 0) - 1)
         : 0
 
-    let hotspotPenalty = (hotspot?.basePenalty ?? 0) + (volatileStop?.basePenalty ?? 0)
-    if (nearest.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES) {
-      hotspotPenalty += (hotspot?.lowEtaPenalty ?? 0) + (volatileStop?.lowEtaPenalty ?? 0)
-    }
-
-    if (lowEtaSameStopOverlapCount > 0) {
-      hotspotPenalty += (hotspot?.overlapPenalty ?? 0) + (volatileStop?.overlapPenalty ?? 0)
-    }
-
-    const labels = [hotspot?.label, volatileStop?.label].filter(Boolean)
     contextByTrackingKey.set(group.trackingKey, {
-      hotspotLabel: labels.length > 0 ? labels.join(' + ') : null,
-      hotspotPenalty: Number(Math.min(0.6, hotspotPenalty).toFixed(2)),
       sameStopOverlapCount,
       lowEtaSameStopOverlapCount,
     })
@@ -147,51 +126,69 @@ export function buildSnapshotContext(
   return contextByTrackingKey
 }
 
-export function resolveElapsedMinutes(
-  state: Map<string, InterpolationState>,
-  busId: string,
-  nextMinutes: number,
-  stationId: string,
-  now: number,
-): number {
-  const currentState = state.get(busId)
-
-  if (
-    !currentState ||
-    currentState.reportedMinutes !== nextMinutes ||
-    currentState.targetStationId !== stationId
-  ) {
-    state.set(busId, {
-      reportedMinutes: nextMinutes,
-      targetStationId: stationId,
-      localStartTime: now,
-    })
-
-    return 0
-  }
-
-  return (now - currentState.localStartTime) / 60000
+export interface SegmentProgressResolution {
+  progressRatio: number
+  segmentElapsedSeconds: number
+  predictionAgeSeconds: number
 }
 
-export function isGhostPrediction(
-  persistedGhost: GhostBusState | null,
+const CALIBRATED_REMAINING_MINUTES: Record<number, number> = {
+  0: 0.51,
+  1: 0.81,
+  2: 1.88,
+  3: 1.88,
+  4: 2.9,
+  5: 3.98,
+  6: 2.32,
+  7: 3.13,
+  8: 4.13,
+}
+
+export function resolveSegmentProgress(
+  state: Map<string, InterpolationState>,
+  trackingKey: string,
   prediction: BusPrediction,
-): boolean {
-  if (!persistedGhost) {
-    return false
+  segment: ResolvedBusSegment,
+  now: number,
+): SegmentProgressResolution {
+  const currentState = state.get(trackingKey)
+  const estimatedSeconds = segment.estimatedSegmentMinutes * 60
+
+  if (!currentState || currentState.targetStationId !== prediction.station.id) {
+    const isFirstObservation = !currentState
+    const calibratedRemaining = CALIBRATED_REMAINING_MINUTES[prediction.minutes]
+    const initialProgress =
+      isFirstObservation && calibratedRemaining !== undefined
+        ? clampScore(1 - (calibratedRemaining * 60) / estimatedSeconds)
+        : 0
+    const progressRatio = Math.min(0.9, initialProgress)
+    state.set(trackingKey, {
+      targetStationId: prediction.station.id,
+      segmentEnteredAt: now,
+      lastPredictionChangedAt: now,
+      lastReportedMinutes: prediction.minutes,
+      progressRatio,
+    })
+    return { progressRatio, segmentElapsedSeconds: 0, predictionAgeSeconds: 0 }
   }
 
-  if (persistedGhost.reason === 'low_eta_plateau') {
-    return (
-      persistedGhost.stationId === prediction.station.id &&
-      prediction.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES
-    )
+  if (currentState.lastReportedMinutes !== prediction.minutes) {
+    currentState.lastReportedMinutes = prediction.minutes
+    currentState.lastPredictionChangedAt = now
   }
 
-  return (
-    persistedGhost.minutes === prediction.minutes &&
-    persistedGhost.stationId === prediction.station.id
+  const segmentElapsedSeconds = Math.max(0, (now - currentState.segmentEnteredAt) / 1000)
+  const predictionAgeSeconds = Math.max(0, (now - currentState.lastPredictionChangedAt) / 1000)
+  const elapsedProgress = segmentElapsedSeconds / estimatedSeconds
+  const calibratedRemaining = CALIBRATED_REMAINING_MINUTES[prediction.minutes]
+  const etaProgress =
+    calibratedRemaining === undefined ? 0 : 1 - (calibratedRemaining * 60) / estimatedSeconds
+  currentState.progressRatio = Math.min(
+    0.98,
+    Math.max(currentState.progressRatio, elapsedProgress, etaProgress),
   )
+
+  return { progressRatio: currentState.progressRatio, segmentElapsedSeconds, predictionAgeSeconds }
 }
 
 export function resolveBusSegment(
@@ -211,24 +208,13 @@ export function resolveBusSegment(
   const previousStopIndex = getWrappedIndex(nextStopIndex - 1, line.stops.length)
   const previousStop = line.stops[previousStopIndex]
   const nextStop = line.stops[nextStopIndex]
+  const durationEstimate = estimateSegmentDuration(line, predictions, nextStopIndex)
 
   return {
     previousStop,
     nextStop,
-    estimatedSegmentMinutes: estimateSegmentMinutes(line, predictions, nextStopIndex),
+    ...durationEstimate,
   }
-}
-
-export function calculateSegmentProgress(
-  minutesToNextStop: number,
-  estimatedSegmentMinutes: number,
-): number {
-  if (estimatedSegmentMinutes <= 0) {
-    return 0
-  }
-
-  const rawProgress = 1 - minutesToNextStop / estimatedSegmentMinutes
-  return Math.min(1, Math.max(0, rawProgress))
 }
 
 export function assessPredictionConfidence(
@@ -236,6 +222,7 @@ export function assessPredictionConfidence(
   predictions: BusPrediction[],
   history: PredictionHistoryState,
   snapshotContext: BusSnapshotContext,
+  predictionAgeSeconds: number,
 ): BusConfidenceAssessment {
   const routeGapCount = countRouteGaps(line, predictions)
   const routeContinuityScore = clampScore(1 - Math.min(0.55, routeGapCount * 0.08))
@@ -261,32 +248,34 @@ export function assessPredictionConfidence(
     Math.min(0.12, snapshotContext.sameStopOverlapCount * SAME_STOP_OVERLAP_PENALTY) +
     Math.min(0.32, snapshotContext.lowEtaSameStopOverlapCount * LOW_ETA_SAME_STOP_OVERLAP_PENALTY)
 
-  const contextScore = clampScore(1 - snapshotContext.hotspotPenalty - overlapPenalty)
+  const contextScore = clampScore(1 - overlapPenalty)
+  const freshnessScore = clampScore(
+    1 - Math.max(0, predictionAgeSeconds - PREDICTION_STALE_WARNING_SECONDS) / 900,
+  )
 
   const normalizedScore = Number(
     clampScore(
-      routeContinuityScore * 0.25 +
-        etaStabilityScore * 0.2 +
-        plateauScore * 0.35 +
-        contextScore * 0.2,
+      routeContinuityScore * 0.24 +
+        etaStabilityScore * 0.19 +
+        plateauScore * 0.24 +
+        contextScore * 0.18 +
+        freshnessScore * 0.15,
     ).toFixed(2),
   )
 
   const hasLowEtaOverlap = snapshotContext.lowEtaSameStopOverlapCount > 0
-  const hasHotspotPressure = snapshotContext.hotspotPenalty >= 0.16
   const isHardFreezeCandidate =
-    history.repeatedPolls >= LOW_ETA_GHOST_POLLS &&
-    history.sameStopPolls >= LOW_ETA_GHOST_POLLS &&
+    history.repeatedPolls >= STALE_PREDICTION_SUPPRESSION_POLLS &&
+    history.sameStopPolls >= STALE_PREDICTION_SUPPRESSION_POLLS &&
     history.lastMinutes <= LOW_ETA_PLATEAU_MAX_MINUTES &&
-    (hasLowEtaOverlap || snapshotContext.hotspotPenalty >= 0.22)
+    hasLowEtaOverlap
   const isSoftPlateauCandidate =
-    history.lowEtaPlateauPolls >= LOW_ETA_GHOST_POLLS + 4 &&
+    history.lowEtaPlateauPolls >= STALE_PREDICTION_SUPPRESSION_POLLS + 4 &&
     plateauScore <= 0.12 &&
     normalizedScore <= 0.22 &&
-    (hasLowEtaOverlap || hasHotspotPressure)
-  const isGhostCandidate = isHardFreezeCandidate || isSoftPlateauCandidate
+    hasLowEtaOverlap
+  const isStaleCandidate = isHardFreezeCandidate || isSoftPlateauCandidate
 
-  const ghostReason = isGhostCandidate ? 'low_eta_plateau' : null
   const label: BusConfidenceLabel =
     normalizedScore >= 0.75 ? 'high' : normalizedScore >= 0.45 ? 'medium' : 'low'
 
@@ -299,10 +288,10 @@ export function assessPredictionConfidence(
       etaStabilityScore: Number(etaStabilityScore.toFixed(2)),
       plateauScore: Number(plateauScore.toFixed(2)),
       contextScore: Number(contextScore.toFixed(2)),
+      freshnessScore: Number(freshnessScore.toFixed(2)),
     },
     context: snapshotContext,
-    isGhostCandidate,
-    ghostReason,
+    isStaleCandidate,
   }
 }
 
@@ -318,8 +307,6 @@ export function resolveBusRenderState(
   }
 
   const lowEta = prediction.minutes <= LOW_ETA_PLATEAU_MAX_MINUTES
-  const isLamiaKoHotspot = prediction.lineRef === 'L.1 LEIOA' && prediction.station.id === '342'
-  const hasHotspotRisk = confidence.context.hotspotPenalty >= 0.18
   const hasLowEtaOverlap = confidence.context.lowEtaSameStopOverlapCount > 0
   const hasSameStopOverlap = confidence.context.sameStopOverlapCount > 0
   const bootstrapConfirmed = successfulPollCount >= MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT
@@ -340,16 +327,12 @@ export function resolveBusRenderState(
     return 'moving'
   }
 
-  if (isLamiaKoHotspot && lowEta) {
-    return 'holding'
-  }
-
   if (!bootstrapConfirmed) {
     if (settledSameStopSignal || (!lowEta && continuityLooksGood)) {
       return 'moving'
     }
 
-    if (lowEta && continuityLooksGood && !hasHotspotRisk && !hasLowEtaOverlap) {
+    if (lowEta && continuityLooksGood && !hasLowEtaOverlap) {
       return 'ambiguous'
     }
 
@@ -365,14 +348,13 @@ export function resolveBusRenderState(
       confidence.score >= 0.62 &&
       confidence.components.contextScore >= 0.6 &&
       confidence.routeGapCount <= 2 &&
-      !hasLowEtaOverlap &&
-      !hasHotspotRisk
+      !hasLowEtaOverlap
 
     if (lowEtaLooksPlausible && (history.stationChanges > 0 || history.pollsObserved >= 4)) {
       return 'moving'
     }
 
-    if (hasLowEtaOverlap || hasHotspotRisk) {
+    if (hasLowEtaOverlap) {
       return 'holding'
     }
 
@@ -449,22 +431,9 @@ export function updatePredictionHistory(
 }
 
 export function resolveSuppressionReason(
-  prediction: BusPrediction,
-  elapsedMinutes: number,
   confidence: BusConfidenceAssessment,
-): GhostSuppressionReason | null {
-  if (
-    elapsedMinutes >
-    prediction.minutes + GHOST_BUS_GRACE_MINUTES + ELAPSED_TIMEOUT_EXTRA_MINUTES
-  ) {
-    return 'elapsed_timeout'
-  }
-
-  if (confidence.isGhostCandidate) {
-    return confidence.ghostReason
-  }
-
-  return null
+): PredictionSuppressionReason | null {
+  return confidence.isStaleCandidate ? 'stale_prediction' : null
 }
 
 interface BuildBusTrackingDiagnosticArgs {
@@ -475,11 +444,13 @@ interface BuildBusTrackingDiagnosticArgs {
   resolvedSegment: ResolvedBusSegment | null
   exactMinutesAway: number
   segmentProgress: number
+  segmentElapsedSeconds: number
+  predictionAgeSeconds: number
   historyState: PredictionHistoryState
   confidence: BusConfidenceAssessment
   renderState: BusRenderState
   isSuppressed: boolean
-  suppressionReason: GhostSuppressionReason | null
+  suppressionReason: PredictionSuppressionReason | null
 }
 
 export function buildBusTrackingDiagnostic({
@@ -490,6 +461,8 @@ export function buildBusTrackingDiagnostic({
   resolvedSegment,
   exactMinutesAway,
   segmentProgress,
+  segmentElapsedSeconds,
+  predictionAgeSeconds,
   historyState,
   confidence,
   renderState,
@@ -508,6 +481,12 @@ export function buildBusTrackingDiagnostic({
     minutesToNextStop: Number(exactMinutesAway.toFixed(2)),
     estimatedSegmentMinutes: Number((resolvedSegment?.estimatedSegmentMinutes ?? 0).toFixed(2)),
     progressRatio: Number(segmentProgress.toFixed(2)),
+    segmentElapsedSeconds: Number(segmentElapsedSeconds.toFixed(1)),
+    predictionAgeSeconds: Number(predictionAgeSeconds.toFixed(1)),
+    p10SegmentMinutes: Number((resolvedSegment?.p10SegmentMinutes ?? 0).toFixed(2)),
+    p90SegmentMinutes: Number((resolvedSegment?.p90SegmentMinutes ?? 0).toFixed(2)),
+    priorSampleSize: resolvedSegment?.priorSampleSize ?? 0,
+    priorSource: resolvedSegment?.priorSource ?? 'fallback',
     repeatedPolls: historyState.repeatedPolls,
     sameStopPolls: historyState.sameStopPolls,
     lowEtaPlateauPolls: historyState.lowEtaPlateauPolls,
@@ -520,31 +499,45 @@ export function buildBusTrackingDiagnostic({
     etaStabilityScore: confidence.components.etaStabilityScore,
     plateauScore: confidence.components.plateauScore,
     contextScore: confidence.components.contextScore,
-    hotspotLabel: confidence.context.hotspotLabel,
-    hotspotPenalty: confidence.context.hotspotPenalty,
+    freshnessScore: confidence.components.freshnessScore,
     sameStopOverlapCount: confidence.context.sameStopOverlapCount,
     lowEtaSameStopOverlapCount: confidence.context.lowEtaSameStopOverlapCount,
-    isGhostCandidate: confidence.isGhostCandidate,
+    isStaleCandidate: confidence.isStaleCandidate,
     isSuppressed,
     suppressionReason,
   }
 }
 
-function estimateSegmentMinutes(
+type SegmentDurationEstimate = Pick<
+  ResolvedBusSegment,
+  | 'estimatedSegmentMinutes'
+  | 'p10SegmentMinutes'
+  | 'p90SegmentMinutes'
+  | 'priorSampleSize'
+  | 'priorSource'
+>
+
+function estimateSegmentDuration(
   line: Line,
   predictions: BusPrediction[],
   nextStopIndex: number,
-): number {
+): SegmentDurationEstimate {
   const previousStopIndex = getWrappedIndex(nextStopIndex - 1, line.stops.length)
   const previousStopId = line.stops[previousStopIndex]?.id
   const nextStopId = line.stops[nextStopIndex]?.id
-  const empiricalPriorMinutes =
+  const empiricalPrior =
     previousStopId && nextStopId
-      ? EMPIRICAL_SEGMENT_PRIORS_MINUTES[`${previousStopId}->${nextStopId}`]
+      ? SEGMENT_DURATION_PRIORS[`${line.ref}:${previousStopId}->${nextStopId}`]
       : null
 
-  if (empiricalPriorMinutes && empiricalPriorMinutes > 0) {
-    return empiricalPriorMinutes
+  if (empiricalPrior) {
+    return {
+      estimatedSegmentMinutes: empiricalPrior.medianSeconds / 60,
+      p10SegmentMinutes: empiricalPrior.p10Seconds / 60,
+      p90SegmentMinutes: empiricalPrior.p90Seconds / 60,
+      priorSampleSize: empiricalPrior.sampleSize,
+      priorSource: 'line-segment',
+    }
   }
 
   const nextAdjacentStopIndex = getWrappedIndex(nextStopIndex + 1, line.stops.length)
@@ -554,7 +547,8 @@ function estimateSegmentMinutes(
     (prediction) => prediction.station.id === nextAdjacentStopId,
   )
   if (adjacentPrediction) {
-    return Math.max(1, adjacentPrediction.minutes - predictions[0].minutes)
+    const minutes = Math.max(1, adjacentPrediction.minutes - predictions[0].minutes)
+    return buildEstimatedDuration(minutes, 'live-adjacent')
   }
 
   const orderedPredictions = predictions
@@ -584,7 +578,7 @@ function estimateSegmentMinutes(
   }
 
   if (adjacentDeltas.length === 0) {
-    return 2
+    return buildEstimatedDuration(2, 'fallback')
   }
 
   localAdjacentDeltas.sort((left, right) => left.distanceToTarget - right.distanceToTarget)
@@ -594,12 +588,25 @@ function estimateSegmentMinutes(
     .map((entry) => entry.delta)
 
   if (nearestLocalDeltas.length > 0) {
-    return Math.max(1, average(nearestLocalDeltas))
+    const minutes = Math.max(1, average(nearestLocalDeltas))
+    return buildEstimatedDuration(minutes, 'live-adjacent')
   }
 
-  const averageDelta = average(adjacentDeltas)
+  const minutes = Math.max(1, average(adjacentDeltas))
+  return buildEstimatedDuration(minutes, 'live-adjacent')
+}
 
-  return Math.max(1, averageDelta)
+function buildEstimatedDuration(
+  minutes: number,
+  source: Extract<ResolvedBusSegment['priorSource'], 'live-adjacent' | 'fallback'>,
+): SegmentDurationEstimate {
+  return {
+    estimatedSegmentMinutes: minutes,
+    p10SegmentMinutes: source === 'fallback' ? minutes * 0.5 : minutes * 0.65,
+    p90SegmentMinutes: source === 'fallback' ? minutes * 2 : minutes * 1.5,
+    priorSampleSize: 0,
+    priorSource: source,
+  }
 }
 
 function countRouteGaps(line: Line, predictions: BusPrediction[]): number {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   statusText: string
+  statusTone: 'online' | 'loading' | 'idle' | 'degraded'
 }>()
 </script>
 
@@ -8,9 +9,12 @@ defineProps<{
   <header class="glass-header">
     <div>
       <h1>Leioa Bus Live</h1>
-      <p>Visión en tiempo real de la red</p>
+      <p>Seguimiento estimado de la red</p>
     </div>
-    <span class="status-pill">{{ statusText }}</span>
+    <span class="status-pill" :class="`status-pill--${statusTone}`" aria-live="polite">
+      <i aria-hidden="true" />
+      {{ statusText }}
+    </span>
   </header>
 </template>
 
@@ -62,6 +66,35 @@ defineProps<{
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
+}
+
+.status-pill i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px rgba(0, 78, 77, 0.1);
+}
+
+.status-pill--online {
+  background: rgba(12, 128, 86, 0.11);
+  color: #086b49;
+}
+
+.status-pill--loading {
+  background: rgba(183, 120, 0, 0.12);
+  color: #855800;
+}
+
+.status-pill--idle {
+  background: rgba(66, 78, 88, 0.1);
+  color: #4f5a63;
+}
+
+.status-pill--degraded {
+  background: rgba(215, 38, 56, 0.1);
+  color: #9b2530;
 }
 
 @media (max-width: 720px) {

@@ -38,7 +38,13 @@ const hasDiagnostics = computed(() => props.debugEnabled && props.diagnostics.le
         <span>Render state: {{ diagnostic.renderState }}</span>
         <span>ETA next: {{ diagnostic.minutesToNextStop }} min</span>
         <span>Segment: {{ diagnostic.estimatedSegmentMinutes }} min</span>
+        <span>
+          Prior: {{ diagnostic.priorSource }} · n={{ diagnostic.priorSampleSize }} · P10–P90
+          {{ diagnostic.p10SegmentMinutes }}–{{ diagnostic.p90SegmentMinutes }} min
+        </span>
         <span>Progress: {{ diagnostic.progressRatio }}</span>
+        <span>Time in segment: {{ diagnostic.segmentElapsedSeconds }} s</span>
+        <span>Prediction unchanged: {{ diagnostic.predictionAgeSeconds }} s</span>
         <span>Confidence: {{ diagnostic.confidenceLabel }} ({{ diagnostic.confidenceScore }})</span>
         <span>Polls observed: {{ diagnostic.pollsObserved }}</span>
         <span>Station changes: {{ diagnostic.stationChanges }}</span>
@@ -49,16 +55,13 @@ const hasDiagnostics = computed(() => props.debugEnabled && props.diagnostics.le
         <span>ETA stability: {{ diagnostic.etaStabilityScore }}</span>
         <span>Plateau score: {{ diagnostic.plateauScore }}</span>
         <span>Context score: {{ diagnostic.contextScore }}</span>
+        <span>Freshness score: {{ diagnostic.freshnessScore }}</span>
         <span>Same-stop overlap: {{ diagnostic.sameStopOverlapCount }}</span>
         <span>Low ETA overlap: {{ diagnostic.lowEtaSameStopOverlapCount }}</span>
-        <span v-if="diagnostic.hotspotLabel">Hotspot: {{ diagnostic.hotspotLabel }}</span>
-        <span v-if="diagnostic.hotspotPenalty > 0"
-          >Hotspot penalty: {{ diagnostic.hotspotPenalty }}</span
-        >
         <span>ETA increase streak: {{ diagnostic.sameStopEtaIncreaseCount }}</span>
         <span>Large jump streak: {{ diagnostic.largeEtaJumpCount }}</span>
         <span>Route gaps: {{ diagnostic.routeGapCount }}</span>
-        <span v-if="diagnostic.isGhostCandidate">Ghost candidate</span>
+        <span v-if="diagnostic.isStaleCandidate">Stale prediction candidate</span>
         <span v-if="diagnostic.isSuppressed">Suppressed: {{ diagnostic.suppressionReason }}</span>
       </li>
     </ul>

@@ -20,18 +20,14 @@ export interface ActiveBusGroup {
 
 export type BusRenderState = 'moving' | 'holding' | 'ambiguous'
 export type BusConfidenceLabel = 'high' | 'medium' | 'low'
-export type GhostSuppressionReason = 'elapsed_timeout' | 'low_eta_plateau'
-
-export interface GhostBusState {
-  minutes: number
-  stationId: string
-  reason: GhostSuppressionReason
-}
+export type PredictionSuppressionReason = 'stale_prediction'
 
 export interface InterpolationState {
-  reportedMinutes: number
   targetStationId: string
-  localStartTime: number
+  segmentEnteredAt: number
+  lastPredictionChangedAt: number
+  lastReportedMinutes: number
+  progressRatio: number
 }
 
 export interface PredictionHistoryState {
@@ -49,12 +45,17 @@ export interface PredictionHistoryState {
 export interface StationArrivals {
   station: Station
   arrivals: Arrival[]
+  isSuccessful: boolean
 }
 
 export interface ResolvedBusSegment {
   previousStop: LineStop
   nextStop: LineStop
   estimatedSegmentMinutes: number
+  p10SegmentMinutes: number
+  p90SegmentMinutes: number
+  priorSampleSize: number
+  priorSource: 'line-segment' | 'live-adjacent' | 'fallback'
 }
 
 export interface BusTrackingDiagnostic {
@@ -69,6 +70,12 @@ export interface BusTrackingDiagnostic {
   minutesToNextStop: number
   estimatedSegmentMinutes: number
   progressRatio: number
+  segmentElapsedSeconds: number
+  predictionAgeSeconds: number
+  p10SegmentMinutes: number
+  p90SegmentMinutes: number
+  priorSampleSize: number
+  priorSource: ResolvedBusSegment['priorSource']
   repeatedPolls: number
   sameStopPolls: number
   lowEtaPlateauPolls: number
@@ -81,11 +88,10 @@ export interface BusTrackingDiagnostic {
   etaStabilityScore: number
   plateauScore: number
   contextScore: number
-  hotspotLabel: string | null
-  hotspotPenalty: number
+  freshnessScore: number
   sameStopOverlapCount: number
   lowEtaSameStopOverlapCount: number
-  isGhostCandidate: boolean
+  isStaleCandidate: boolean
   isSuppressed: boolean
-  suppressionReason: GhostSuppressionReason | null
+  suppressionReason: PredictionSuppressionReason | null
 }

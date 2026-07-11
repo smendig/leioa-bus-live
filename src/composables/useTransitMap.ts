@@ -15,14 +15,12 @@ import {
   NO_SERVICE_ZERO_ACTIVE_POLLS_NIGHT,
 } from '../config/transit'
 import { MOBILE_MEDIA_QUERY } from '../config/ui'
-import { getArrivals, getTopology } from '../services/api'
+import { getArrivals, getArrivalsDetailed, getTopology } from '../services/api'
 import { decodeLineGeometry, getDisplayGeometry, resolveMarkerPosition } from '../services/geo'
 import type {
   ActiveBusGroup,
   BusPrediction,
   BusTrackingDiagnostic,
-  GhostBusState,
-  GhostSuppressionReason,
   InterpolationState,
   LineWithGeometry,
   PredictionHistoryState,
@@ -33,13 +31,11 @@ import {
   assessPredictionConfidence,
   buildBusTrackingDiagnostic,
   buildSnapshotContext,
-  calculateSegmentProgress,
   collectActiveBuses,
   EMPTY_SNAPSHOT_CONTEXT,
-  isGhostPrediction,
   resolveBusRenderState,
   resolveBusSegment,
-  resolveElapsedMinutes,
+  resolveSegmentProgress,
   resolveSuppressionReason,
   updatePredictionHistory,
 } from '../utils/tracking'
@@ -107,7 +103,16 @@ export function useTransitMap() {
       return `Iniciando ${bootstrapSampleCount.value}/${MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT}`
     }
 
-    return `Act. ${formatTimestamp(lastUpdatedAt.value)}`
+    return `${activeBusCount.value} ${activeBusCount.value === 1 ? 'bus' : 'buses'} · ${formatTimestamp(lastUpdatedAt.value)}`
+  })
+
+  const statusTone = computed<'online' | 'loading' | 'idle' | 'degraded'>(() => {
+    if (errorMessage.value) return 'degraded'
+    if (isLoading.value || bootstrapSampleCount.value < MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT) {
+      return 'loading'
+    }
+    if (activeBusCount.value === 0) return 'idle'
+    return 'online'
   })
 
   const resolveLineName = (lineRef: string): string =>
@@ -220,11 +225,19 @@ export function useTransitMap() {
 
     try {
       const results: StationArrivals[] = await Promise.all(
-        stationsCache.value.map(async (station) => ({
-          station,
-          arrivals: await getArrivals(station.id),
-        })),
+        stationsCache.value.map(async (station) => {
+          const result = await getArrivalsDetailed(station.id)
+          return { station, ...result }
+        }),
       )
+
+      const snapshotCoverageRatio =
+        results.length > 0
+          ? results.filter((result) => result.isSuccessful).length / results.length
+          : 0
+      if (snapshotCoverageRatio < 1) {
+        return
+      }
 
       const successfulPollCount = registerSuccessfulPoll()
       const activeBusGroups = collectActiveBuses(results)
@@ -249,10 +262,6 @@ export function useTransitMap() {
       predictions.sort((left, right) => left.minutes - right.minutes)
       const closestPrediction = predictions[0]
 
-      if (isPersistedGhost(trackingKey, closestPrediction)) {
-        return
-      }
-
       const routeLine = linesCache.value.find((line) => line.ref === lineRef)
       if (!routeLine) {
         return
@@ -263,20 +272,26 @@ export function useTransitMap() {
         trackingKey,
         closestPrediction,
       )
-      const rawElapsedMinutes = getElapsedMinutes(trackingKey, closestPrediction)
-      const elapsedMinutes =
-        successfulPollCount >= MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT ? rawElapsedMinutes : 0
-      const exactMinutesAway = Math.max(0, closestPrediction.minutes - elapsedMinutes)
       const resolvedSegment = resolveBusSegment(routeLine, predictions)
-      const segmentProgress = resolvedSegment
-        ? calculateSegmentProgress(exactMinutesAway, resolvedSegment.estimatedSegmentMinutes)
-        : 0
+      const progress = resolvedSegment
+        ? resolveSegmentProgress(
+            interpolationState,
+            trackingKey,
+            closestPrediction,
+            resolvedSegment,
+            Date.now(),
+          )
+        : { progressRatio: 0, segmentElapsedSeconds: 0, predictionAgeSeconds: 0 }
+      const segmentProgress =
+        successfulPollCount >= MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT ? progress.progressRatio : 0
+      const exactMinutesAway = closestPrediction.minutes
 
       const confidence = assessPredictionConfidence(
         routeLine,
         predictions,
         historyState,
         snapshotContext.get(trackingKey) ?? EMPTY_SNAPSHOT_CONTEXT,
+        progress.predictionAgeSeconds,
       )
       const renderState = resolveBusRenderState(
         closestPrediction,
@@ -285,11 +300,7 @@ export function useTransitMap() {
         historyState,
         successfulPollCount,
       )
-      const suppressionReason = resolveSuppressionReason(
-        closestPrediction,
-        elapsedMinutes,
-        confidence,
-      )
+      const suppressionReason = resolveSuppressionReason(confidence)
       const isSuppressed = suppressionReason !== null
 
       nextDiagnostics.push(
@@ -301,6 +312,8 @@ export function useTransitMap() {
           resolvedSegment,
           exactMinutesAway,
           segmentProgress,
+          segmentElapsedSeconds: progress.segmentElapsedSeconds,
+          predictionAgeSeconds: progress.predictionAgeSeconds,
           historyState,
           confidence,
           renderState,
@@ -310,8 +323,7 @@ export function useTransitMap() {
       )
 
       if (isSuppressed) {
-        persistGhostBus(trackingKey, closestPrediction, suppressionReason)
-        removeBus(trackingKey)
+        removeBus(trackingKey, true)
         return
       }
 
@@ -337,17 +349,6 @@ export function useTransitMap() {
     })
 
     diagnostics.value = nextDiagnostics
-  }
-
-  function getElapsedMinutes(trackingKey: string, prediction: BusPrediction): number {
-    const now = Date.now()
-    return resolveElapsedMinutes(
-      interpolationState,
-      trackingKey,
-      prediction.minutes,
-      prediction.station.id,
-      now,
-    )
   }
 
   function renderBusMarker(
@@ -399,68 +400,14 @@ export function useTransitMap() {
     })
   }
 
-  function removeBus(trackingKey: string): void {
+  function removeBus(trackingKey: string, preserveTrackingState = false): void {
     const marker = activeBusLayers.get(trackingKey)
     marker?.remove()
     activeBusLayers.delete(trackingKey)
-    interpolationState.delete(trackingKey)
-    predictionHistory.delete(trackingKey)
-  }
-
-  function isPersistedGhost(trackingKey: string, prediction: BusPrediction): boolean {
-    const persistedGhost = readGhostBusState(trackingKey)
-    if (isGhostPrediction(persistedGhost, prediction)) {
-      return true
+    if (!preserveTrackingState) {
+      interpolationState.delete(trackingKey)
+      predictionHistory.delete(trackingKey)
     }
-
-    if (persistedGhost) {
-      localStorage.removeItem(getGhostStorageKey(trackingKey))
-    }
-
-    return false
-  }
-
-  function persistGhostBus(
-    trackingKey: string,
-    prediction: BusPrediction,
-    reason: GhostSuppressionReason,
-  ): void {
-    localStorage.setItem(
-      getGhostStorageKey(trackingKey),
-      JSON.stringify({
-        minutes: prediction.minutes,
-        stationId: prediction.station.id,
-        reason,
-      } satisfies GhostBusState),
-    )
-  }
-
-  function readGhostBusState(trackingKey: string): GhostBusState | null {
-    const rawValue = localStorage.getItem(getGhostStorageKey(trackingKey))
-    if (!rawValue) {
-      return null
-    }
-
-    try {
-      const parsed = JSON.parse(rawValue) as Partial<GhostBusState>
-      if (!parsed.stationId || typeof parsed.minutes !== 'number') {
-        localStorage.removeItem(getGhostStorageKey(trackingKey))
-        return null
-      }
-
-      return {
-        minutes: parsed.minutes,
-        stationId: parsed.stationId,
-        reason: parsed.reason ?? 'elapsed_timeout',
-      }
-    } catch {
-      localStorage.removeItem(getGhostStorageKey(trackingKey))
-      return null
-    }
-  }
-
-  function getGhostStorageKey(trackingKey: string): string {
-    return `ghost_bus_${trackingKey}`
   }
 
   function handleError(error: unknown, fallbackMessage: string): void {
@@ -540,11 +487,19 @@ export function useTransitMap() {
     noServiceLikely.value = zeroActivePolls.value >= threshold
   }
 
+  function resetMapView(): void {
+    map.value?.flyTo([MAP_DEFAULT_CENTER.lat, MAP_DEFAULT_CENTER.lng], MAP_DEFAULT_CENTER.zoom, {
+      duration: 0.7,
+    })
+  }
+
   return {
     diagnostics,
     errorMessage,
     isLoading,
+    resetMapView,
     statusText,
+    statusTone,
   }
 }
 

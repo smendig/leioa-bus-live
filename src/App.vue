@@ -5,12 +5,15 @@ import { ref } from 'vue'
 
 import DiagnosticsPanel from './components/DiagnosticsPanel.vue'
 import ErrorBanner from './components/ErrorBanner.vue'
+import MapActions from './components/MapActions.vue'
 import MapHeader from './components/MapHeader.vue'
+import MapLegend from './components/MapLegend.vue'
 import { useTransitMap } from './composables/useTransitMap'
 import { MOBILE_MEDIA_QUERY } from './config/ui'
 import { isDebugEnabled } from './utils/debug'
 
-const { diagnostics, errorMessage, isLoading, statusText } = useTransitMap()
+const { diagnostics, errorMessage, isLoading, resetMapView, statusText, statusTone } =
+  useTransitMap()
 const debugEnabled = isDebugEnabled()
 const isMobileViewport =
   typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches
@@ -19,14 +22,18 @@ const debugPanelOpen = ref(!isMobileViewport)
 
 <template>
   <div class="app-container">
-    <div v-if="isLoading" class="glass-loader">
-      <div class="spinner" />
+    <div v-if="isLoading" class="glass-loader" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true" />
       <h2>Cargando red de Leioa...</h2>
     </div>
 
     <div id="map" />
 
-    <MapHeader :status-text="statusText" />
+    <MapHeader :status-text="statusText" :status-tone="statusTone" />
+
+    <MapLegend />
+
+    <MapActions @recenter="resetMapView" />
 
     <ErrorBanner v-if="errorMessage" :message="errorMessage" />
 

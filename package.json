@@ -12,8 +12,9 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "preview": "vite preview",
+    "test": "vitest run",
     "typecheck": "vue-tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && npm run format:check"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
   },
   "dependencies": {
     "@mapbox/polyline": "^1.2.1",
@@ -37,6 +38,7 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.26.1",
     "vite": "^7.3.1",
+    "vitest": "^4.1.10",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.0.7"
   }

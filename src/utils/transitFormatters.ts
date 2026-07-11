@@ -7,16 +7,18 @@ export function buildArrivalsPopup(
   resolveLineName: (lineRef: string) => string,
 ): string {
   if (arrivals.length === 0) {
-    return `<h3>${station.name}</h3><p>No hay autobuses activos previstos</p>`
+    return `<h3>${escapeHtml(station.name)}</h3><p class="popup-empty">No hay autobuses previstos ahora</p>`
   }
 
   const items = arrivals
-    .map(
-      (arrival) => `<li><b>${arrival.minutes} min</b> - ${resolveLineName(arrival.lineRef)}</li>`,
-    )
+    .sort((left, right) => left.minutes - right.minutes)
+    .map((arrival) => {
+      const timeLabel = arrival.minutes <= 0 ? 'Llegando' : `${arrival.minutes} min`
+      return `<li><strong class="arrival-time">${timeLabel}</strong><span>${escapeHtml(resolveLineName(arrival.lineRef))}</span></li>`
+    })
     .join('')
 
-  return `<h3>${station.name}</h3><ul class="arrivals-list">${items}</ul>`
+  return `<h3>${escapeHtml(station.name)}</h3><ul class="arrivals-list">${items}</ul>`
 }
 
 export function buildBusPopup(
@@ -33,12 +35,27 @@ export function buildBusPopup(
         ? 'Detenido en parada'
         : 'Estimación ambigua'
 
+  const confidenceExplanation =
+    confidenceLabel === 'high'
+      ? 'señal consistente'
+      : confidenceLabel === 'medium'
+        ? 'predicción aproximada'
+        : 'información inestable o antigua'
+
   return `
-    <b>Autobús #${busId}</b><br/>
-    ${lineName}<br/>
-    Estado: <b>${stateLabel}</b><br/>
-    Confianza: <b>${confidenceLabel}</b><br/>
-    Próxima parada: <b>${prediction.station.name}</b> en ${prediction.minutes} min
+    <div class="bus-popup">
+      <div class="bus-popup__header">
+        <strong>Autobús #${escapeHtml(busId)}</strong>
+        <span class="confidence-badge confidence-badge--${confidenceLabel}">${confidenceLabel}</span>
+      </div>
+      <p class="bus-popup__line">${escapeHtml(lineName)}</p>
+      <dl>
+        <div><dt>Estado</dt><dd>${stateLabel}</dd></div>
+        <div><dt>Próxima parada</dt><dd>${escapeHtml(prediction.station.name)}</dd></div>
+        <div><dt>Llegada</dt><dd>${prediction.minutes <= 0 ? 'Llegando' : `${prediction.minutes} min`}</dd></div>
+      </dl>
+      <p class="bus-popup__note">${confidenceExplanation}</p>
+    </div>
   `
 }
 
@@ -48,4 +65,18 @@ export function formatTimestamp(value: Date): string {
     minute: '2-digit',
     hour12: false,
   })
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+      })[character] ?? character,
+  )
 }
