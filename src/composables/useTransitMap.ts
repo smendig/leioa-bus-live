@@ -31,6 +31,7 @@ import type {
   StationArrivals,
 } from '../types/tracking'
 import type { Line, Station } from '../types/transit'
+import { getPublishedServiceState } from '../utils/serviceSchedule'
 import {
   assessPredictionConfidence,
   buildBusTrackingDiagnostic,
@@ -64,8 +65,8 @@ export function useTransitMap() {
   const bootstrapSampleCount = ref(0)
   const activeBusCount = ref(0)
   const zeroActivePolls = ref(0)
-  const hasObservedActiveBus = ref(false)
   const noServiceLikely = ref(false)
+  const serviceDataMissing = ref(false)
   const consecutivePartialPolls = ref(0)
 
   const stationsCache = ref<Station[]>([])
@@ -84,6 +85,10 @@ export function useTransitMap() {
   const statusText = computed(() => {
     if (errorMessage.value) {
       return 'Problema de conexión'
+    }
+
+    if (serviceDataMissing.value) {
+      return `Sin llegadas anunciadas · ${formatTimestamp(lastUpdatedAt.value ?? new Date())}`
     }
 
     if (isLoading.value) {
@@ -115,6 +120,7 @@ export function useTransitMap() {
 
   const statusTone = computed<'online' | 'loading' | 'idle' | 'degraded'>(() => {
     if (errorMessage.value) return 'degraded'
+    if (serviceDataMissing.value) return 'degraded'
     if (isLoading.value || bootstrapSampleCount.value < MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT) {
       return 'loading'
     }
@@ -527,26 +533,25 @@ export function useTransitMap() {
     activeBusCount.value = activeCount
 
     if (activeCount > 0) {
-      hasObservedActiveBus.value = true
       zeroActivePolls.value = 0
       noServiceLikely.value = false
+      serviceDataMissing.value = false
       return
     }
 
     zeroActivePolls.value += 1
 
-    if (hasObservedActiveBus.value) {
-      noServiceLikely.value = false
-      return
-    }
-
-    const localHour = getLocalHourInTimeZone(new Date(), NO_SERVICE_LOCAL_TIMEZONE)
-    const isNoServiceHour = (NO_SERVICE_LOCAL_HOURS as readonly number[]).includes(localHour)
+    const publishedState = getPublishedServiceState(new Date())
+    const isNoServiceHour = (NO_SERVICE_LOCAL_HOURS as readonly number[]).includes(
+      getLocalHourInTimeZone(new Date(), NO_SERVICE_LOCAL_TIMEZONE),
+    )
     const threshold = isNoServiceHour
       ? NO_SERVICE_ZERO_ACTIVE_POLLS_NIGHT
       : NO_SERVICE_ZERO_ACTIVE_POLLS_DAY
+    const enoughEmptyPolls = zeroActivePolls.value >= threshold
 
-    noServiceLikely.value = zeroActivePolls.value >= threshold
+    noServiceLikely.value = enoughEmptyPolls && publishedState === 'not-scheduled'
+    serviceDataMissing.value = enoughEmptyPolls && publishedState === 'expected'
   }
 
   function resetMapView(): void {

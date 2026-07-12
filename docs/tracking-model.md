@@ -57,6 +57,8 @@ another operational signal fed a particular prediction.
 - Likely out-of-service periods and hidden browser tabs are polled every 60 seconds.
 - Incomplete snapshots never advance or remove vehicles. After three consecutive partial snapshots,
   the UI reports degraded source data while retaining the last complete state.
+- Empty responses during a published service window are reported as missing live data, not as proof
+  that the service is not scheduled. This avoids hiding an upstream outage behind “Sin servicio”.
 
 ## Validation
 
