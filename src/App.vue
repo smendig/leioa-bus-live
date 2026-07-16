@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css'
 
 import { ref } from 'vue'
 
+import BusListPanel from './components/BusListPanel.vue'
 import DiagnosticsPanel from './components/DiagnosticsPanel.vue'
 import ErrorBanner from './components/ErrorBanner.vue'
 import MapActions from './components/MapActions.vue'
@@ -12,8 +13,18 @@ import { useTransitMap } from './composables/useTransitMap'
 import { MOBILE_MEDIA_QUERY } from './config/ui'
 import { isDebugEnabled } from './utils/debug'
 
-const { diagnostics, errorMessage, isLoading, resetMapView, statusText, statusTone } =
-  useTransitMap()
+const {
+  diagnostics,
+  errorMessage,
+  focusBus,
+  isLoading,
+  resetMapView,
+  statusText,
+  statusTone,
+  toggleLine,
+  visibleBuses,
+  visibleLineRefs,
+} = useTransitMap()
 const debugEnabled = isDebugEnabled()
 const isMobileViewport =
   typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches
@@ -31,7 +42,9 @@ const debugPanelOpen = ref(!isMobileViewport)
 
     <MapHeader :status-text="statusText" :status-tone="statusTone" />
 
-    <MapLegend />
+    <MapLegend :visible-lines="visibleLineRefs" @toggle-line="toggleLine" />
+
+    <BusListPanel :buses="visibleBuses" @focus="focusBus" />
 
     <MapActions @recenter="resetMapView" />
 

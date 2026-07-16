@@ -1,11 +1,35 @@
+<script setup lang="ts">
+defineProps<{
+  visibleLines: string[]
+}>()
+
+defineEmits<{
+  toggleLine: [lineRef: string]
+}>()
+
+const lines = [
+  { ref: 'L.1 LEIOA', label: 'L1', className: 'line-dot--one' },
+  { ref: 'L.2 LEIOA', label: 'L2', className: 'line-dot--two' },
+  { ref: 'L.UNICA', label: 'L3', className: 'line-dot--three' },
+]
+</script>
+
 <template>
-  <aside class="map-legend" aria-label="Leyenda del mapa">
+  <aside class="map-legend" aria-label="Filtrar líneas del mapa">
     <div class="legend-lines">
-      <span><i class="line-dot line-dot--one" />L1</span>
-      <span><i class="line-dot line-dot--two" />L2</span>
-      <span><i class="line-dot line-dot--three" />L3</span>
+      <button
+        v-for="line in lines"
+        :key="line.ref"
+        type="button"
+        :class="{ 'is-hidden': !visibleLines.includes(line.ref) }"
+        :aria-pressed="visibleLines.includes(line.ref)"
+        :aria-label="`${visibleLines.includes(line.ref) ? 'Ocultar' : 'Mostrar'} línea ${line.label}`"
+        @click="$emit('toggleLine', line.ref)"
+      >
+        <i class="line-dot" :class="line.className" />{{ line.label }}
+      </button>
     </div>
-    <p>Las posiciones son estimadas</p>
+    <p>Posiciones estimadas</p>
   </aside>
 </template>
 
@@ -28,16 +52,40 @@
 
 .legend-lines {
   display: flex;
-  gap: 12px;
+  gap: 4px;
 }
 
-.legend-lines span {
+.legend-lines button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 8px;
   color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.48);
+  font: inherit;
   font-size: 0.72rem;
   font-weight: 800;
+  cursor: pointer;
+  transition:
+    opacity 160ms ease,
+    background 160ms ease;
+}
+
+.legend-lines button:hover,
+.legend-lines button:focus-visible {
+  background: rgba(255, 255, 255, 0.9);
+  outline: none;
+}
+
+.legend-lines button:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.legend-lines button.is-hidden {
+  opacity: 0.42;
 }
 
 .line-dot {
@@ -65,7 +113,7 @@
   .map-legend {
     left: calc(var(--safe-left) + var(--mobile-edge-space));
     bottom: calc(var(--safe-bottom) + var(--mobile-edge-space));
-    padding: 9px 11px;
+    padding: 8px 9px;
   }
 }
 </style>

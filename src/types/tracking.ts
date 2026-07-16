@@ -61,6 +61,7 @@ export interface ResolvedBusSegment {
 export interface BusTrackingDiagnostic {
   trackingKey: string
   busId: string
+  lineRef: string
   lineName: string
   previousStopName: string
   nextStopName: string

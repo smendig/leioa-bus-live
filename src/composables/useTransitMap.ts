@@ -62,6 +62,7 @@ export function useTransitMap() {
   const errorMessage = ref<string | null>(null)
   const lastUpdatedAt = ref<Date | null>(null)
   const diagnostics = ref<BusTrackingDiagnostic[]>([])
+  const visibleLineRefs = ref<string[]>([])
   const bootstrapSampleCount = ref(0)
   const activeBusCount = ref(0)
   const zeroActivePolls = ref(0)
@@ -72,6 +73,8 @@ export function useTransitMap() {
   const stationsCache = ref<Station[]>([])
   const linesCache = ref<LineWithGeometry[]>([])
   const activeBusLayers = new Map<string, L.Marker>()
+  const busLineRefs = new Map<string, string>()
+  const lineLayers = new Map<string, L.GeoJSON>()
   const interpolationState = new Map<string, InterpolationState>()
   const predictionHistory = new Map<string, PredictionHistoryState>()
   const missingBusPolls = new Map<string, number>()
@@ -128,6 +131,13 @@ export function useTransitMap() {
     return 'online'
   })
 
+  const visibleBuses = computed(() =>
+    diagnostics.value.filter(
+      (diagnostic) =>
+        !diagnostic.isSuppressed && visibleLineRefs.value.includes(diagnostic.lineRef),
+    ),
+  )
+
   const resolveLineName = (lineRef: string): string =>
     linesCache.value.find((line) => line.ref === lineRef)?.name ?? lineRef
 
@@ -167,6 +177,8 @@ export function useTransitMap() {
     bootstrapTimeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId))
     activeBusLayers.forEach((marker) => marker.remove())
     activeBusLayers.clear()
+    busLineRefs.clear()
+    lineLayers.clear()
     interpolationState.clear()
     predictionHistory.clear()
     missingBusPolls.clear()
@@ -185,15 +197,17 @@ export function useTransitMap() {
     const topology = await getTopology()
     stationsCache.value = topology.stations
     linesCache.value = topology.lines.map((line) => enrichLine(line))
+    visibleLineRefs.value = linesCache.value.map((line) => line.ref)
 
     linesCache.value.forEach((line) => {
       const color = LINE_COLORS[line.ref] ?? '#5c1810'
-      L.geoJSON(getDisplayGeometry(line.encodedPath), {
+      const layer = L.geoJSON(getDisplayGeometry(line.encodedPath), {
         style: { color, weight: 6, opacity: 0.8 },
         pane: 'linesPane',
       })
         .addTo(mapInstance)
         .bindPopup(`<b>${line.name}</b>`)
+      lineLayers.set(line.ref, layer)
     })
 
     const stationIcon = L.divIcon({
@@ -351,6 +365,7 @@ export function useTransitMap() {
         buildBusTrackingDiagnostic({
           trackingKey,
           busId,
+          lineRef,
           lineName: routeLine.name,
           prediction: closestPrediction,
           resolvedSegment,
@@ -387,6 +402,7 @@ export function useTransitMap() {
         lng,
         closestPrediction,
         routeLine.name,
+        lineRef,
         confidence.label,
         renderState,
         progress.predictionAgeSeconds,
@@ -403,11 +419,13 @@ export function useTransitMap() {
     lng: number,
     prediction: BusPrediction,
     lineName: string,
+    lineRef: string,
     confidenceLabel: 'high' | 'medium' | 'low',
     renderState: BusTrackingDiagnostic['renderState'],
     predictionAgeSeconds: number,
   ): void {
     const existingMarker = activeBusLayers.get(trackingKey)
+    busLineRefs.set(trackingKey, lineRef)
     const icon = createBusMarkerIcon()
     const popupContent = buildBusPopup(
       busId,
@@ -424,6 +442,7 @@ export function useTransitMap() {
       existingMarker.setIcon(icon)
       existingMarker.setPopupContent(popupContent)
       existingMarker.setOpacity(opacity)
+      syncMarkerVisibility(existingMarker, lineRef)
       missingBusPolls.delete(trackingKey)
       return
     }
@@ -439,7 +458,7 @@ export function useTransitMap() {
       zIndexOffset: 1000,
     }).bindPopup(popupContent)
 
-    marker.addTo(mapInstance)
+    if (isLineVisible(lineRef)) marker.addTo(mapInstance)
     marker.setOpacity(opacity)
     activeBusLayers.set(trackingKey, marker)
   }
@@ -470,6 +489,7 @@ export function useTransitMap() {
     const marker = activeBusLayers.get(trackingKey)
     marker?.remove()
     activeBusLayers.delete(trackingKey)
+    busLineRefs.delete(trackingKey)
     missingBusPolls.delete(trackingKey)
     if (!preserveTrackingState) {
       interpolationState.delete(trackingKey)
@@ -560,13 +580,63 @@ export function useTransitMap() {
     })
   }
 
+  function isLineVisible(lineRef: string): boolean {
+    return visibleLineRefs.value.includes(lineRef)
+  }
+
+  function syncMarkerVisibility(marker: L.Marker, lineRef: string): void {
+    const mapInstance = map.value
+    if (!mapInstance) return
+
+    if (isLineVisible(lineRef)) {
+      if (!mapInstance.hasLayer(marker)) marker.addTo(mapInstance)
+    } else if (mapInstance.hasLayer(marker)) {
+      marker.remove()
+    }
+  }
+
+  function toggleLine(lineRef: string): void {
+    const mapInstance = map.value
+    const lineLayer = lineLayers.get(lineRef)
+    const willShow = !isLineVisible(lineRef)
+
+    visibleLineRefs.value = willShow
+      ? [...visibleLineRefs.value, lineRef]
+      : visibleLineRefs.value.filter((ref) => ref !== lineRef)
+
+    if (mapInstance && lineLayer) {
+      if (willShow) lineLayer.addTo(mapInstance)
+      else lineLayer.remove()
+    }
+
+    activeBusLayers.forEach((marker, trackingKey) => {
+      if (busLineRefs.get(trackingKey) === lineRef) syncMarkerVisibility(marker, lineRef)
+    })
+  }
+
+  function focusBus(trackingKey: string): void {
+    const marker = activeBusLayers.get(trackingKey)
+    const lineRef = busLineRefs.get(trackingKey)
+    const mapInstance = map.value
+    if (!marker || !lineRef || !mapInstance) return
+
+    if (!isLineVisible(lineRef)) toggleLine(lineRef)
+    syncMarkerVisibility(marker, lineRef)
+    mapInstance.flyTo(marker.getLatLng(), Math.max(mapInstance.getZoom(), 15), { duration: 0.6 })
+    window.setTimeout(() => marker.openPopup(), 650)
+  }
+
   return {
     diagnostics,
     errorMessage,
+    focusBus,
     isLoading,
     resetMapView,
     statusText,
     statusTone,
+    toggleLine,
+    visibleBuses,
+    visibleLineRefs,
   }
 }
 

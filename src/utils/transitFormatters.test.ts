@@ -17,9 +17,10 @@ describe('buildBusPopup', () => {
       lineRef: 'L.2 LEIOA',
     }
 
-    expect(
-      buildBusPopup(306 as unknown as string, prediction, 'Línea 2', 'moving', 'high'),
-    ).toContain('Autobús #306')
+    const popup = buildBusPopup(306 as unknown as string, prediction, 'Línea 2', 'moving', 'high')
+
+    expect(popup).toContain('Autobús #306')
+    expect(popup).toContain('>Alta<')
   })
 
   it('makes stale upstream information visible to the user', () => {

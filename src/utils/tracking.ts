@@ -454,6 +454,7 @@ export function resolveSuppressionReason(
 interface BuildBusTrackingDiagnosticArgs {
   trackingKey: string
   busId: string
+  lineRef: string
   lineName: string
   prediction: BusPrediction
   resolvedSegment: ResolvedBusSegment | null
@@ -471,6 +472,7 @@ interface BuildBusTrackingDiagnosticArgs {
 export function buildBusTrackingDiagnostic({
   trackingKey,
   busId,
+  lineRef,
   lineName,
   prediction,
   resolvedSegment,
@@ -487,6 +489,7 @@ export function buildBusTrackingDiagnostic({
   return {
     trackingKey,
     busId,
+    lineRef,
     lineName,
     previousStopName: resolvedSegment?.previousStop.name ?? 'Unknown',
     nextStopName: resolvedSegment?.nextStop.name ?? prediction.station.name,

@@ -46,12 +46,14 @@ export function buildBusPopup(
     predictionAgeSeconds < 60
       ? 'Predicción actualizada recientemente'
       : `Predicción sin cambios desde hace ${Math.max(1, Math.round(predictionAgeSeconds / 60))} min`
+  const confidenceText =
+    confidenceLabel === 'high' ? 'Alta' : confidenceLabel === 'medium' ? 'Media' : 'Baja'
 
   return `
     <div class="bus-popup">
       <div class="bus-popup__header">
         <strong>Autobús #${escapeHtml(busId)}</strong>
-        <span class="confidence-badge confidence-badge--${confidenceLabel}">${confidenceLabel}</span>
+        <span class="confidence-badge confidence-badge--${confidenceLabel}">${confidenceText}</span>
       </div>
       <p class="bus-popup__line">${escapeHtml(lineName)}</p>
       <dl>
