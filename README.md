@@ -1,8 +1,9 @@
 # Leioa Bus Live
 
-Visualize Leioa buses on a live map.
+Mapa público no oficial de Lejoan Busa, el autobús urbano de Leioa. Muestra próximas llegadas y
+posiciones estimadas de las líneas L1, L2 y L3.
 
-Live demo: [smendig.github.io/leioa-bus-live](https://smendig.github.io/leioa-bus-live/)
+Mapa en directo: [Lejoan Busa y autobuses de Leioa](https://smendig.github.io/leioa-bus-live/)
 
 ## Run locally
 

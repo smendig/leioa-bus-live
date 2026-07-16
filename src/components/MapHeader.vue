@@ -8,8 +8,8 @@ defineProps<{
 <template>
   <header class="glass-header">
     <div>
-      <h1>Leioa Bus Live</h1>
-      <p>Seguimiento estimado de la red</p>
+      <h1>Lejoan Busa en directo</h1>
+      <p>Leioa Bus Live · llegadas y mapa</p>
     </div>
     <span class="status-pill" :class="`status-pill--${statusTone}`" aria-live="polite">
       <i aria-hidden="true" />

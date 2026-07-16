@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import BusListPanel from './components/BusListPanel.vue'
 import DiagnosticsPanel from './components/DiagnosticsPanel.vue'
 import ErrorBanner from './components/ErrorBanner.vue'
+import InfoPanel from './components/InfoPanel.vue'
 import MapActions from './components/MapActions.vue'
 import MapHeader from './components/MapHeader.vue'
 import MapLegend from './components/MapLegend.vue'
@@ -41,6 +42,8 @@ const debugEnabled = isDebugEnabled()
     <BusListPanel :buses="visibleBuses" @focus="focusBus" />
 
     <MapActions @recenter="resetMapView" />
+
+    <InfoPanel />
 
     <ErrorBanner v-if="errorMessage" :message="errorMessage" />
 
