@@ -1,12 +1,12 @@
-import CryptoJS from 'crypto-js'
-
 import { TRANSIT_PUBLIC_GROUP_ID, TRANSIT_PUBLIC_LANG } from '../config/transit'
 import type { Arrival, Line, LineStop, Station, Topology } from '../types/transit'
+import { createAesCbcCipher } from '../utils/aes'
 
 const API_URL = getRequiredEnv('VITE_BUS_API_URL').replace(/\/+$/, '')
-const KEY = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_KEY'))
-const IV = CryptoJS.enc.Utf8.parse(getRequiredEnv('VITE_BUS_AES_IV'))
-const IV_B64 = CryptoJS.enc.Base64.stringify(IV)
+const CIPHER = createAesCbcCipher(
+  getRequiredEnv('VITE_BUS_AES_KEY'),
+  getRequiredEnv('VITE_BUS_AES_IV'),
+)
 const API_REQUEST_TIMEOUT_MS = 10_000
 
 const BASE_PAYLOAD = {
@@ -69,28 +69,14 @@ function getRequiredEnv(name: keyof ImportMetaEnv): string {
   return value.trim()
 }
 
-function encryptPayload(data: ApiPayload): string {
+async function encryptPayload(data: ApiPayload): Promise<string> {
   const payload = { ...BASE_PAYLOAD, ...data }
-  const jsonStr = JSON.stringify(payload)
-
-  const encrypted = CryptoJS.AES.encrypt(jsonStr, KEY, {
-    iv: IV,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  })
-
-  return encrypted.toString()
+  return CIPHER.encrypt(JSON.stringify(payload))
 }
 
-function decryptPayload<T>(encryptedB64: string): T | null {
+async function decryptPayload<T>(encryptedBase64: string): Promise<T | null> {
   try {
-    const decrypted = CryptoJS.AES.decrypt(encryptedB64, KEY, {
-      iv: IV,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-    })
-    const jsonStr = decrypted.toString(CryptoJS.enc.Utf8)
-    return JSON.parse(jsonStr) as T
+    return JSON.parse(await CIPHER.decrypt(encryptedBase64)) as T
   } catch (error) {
     console.error('Failed to decrypt API response', error)
     return null
@@ -98,10 +84,10 @@ function decryptPayload<T>(encryptedB64: string): T | null {
 }
 
 async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promise<T | null> {
-  const encPayload = encryptPayload(payload)
+  const encPayload = await encryptPayload(payload)
   const params = new URLSearchParams({
     jsonInput: encPayload,
-    InitialVector: IV_B64,
+    InitialVector: CIPHER.ivBase64,
     _: Date.now().toString(),
   })
 
@@ -121,7 +107,7 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
       responseText = responseText.slice(1, -1)
     }
 
-    return decryptPayload<T>(responseText)
+    return await decryptPayload<T>(responseText)
   } catch (error) {
     console.error(`API Error on ${endpoint}:`, error)
     return null
