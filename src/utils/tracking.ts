@@ -49,6 +49,9 @@ export const EMPTY_SNAPSHOT_CONTEXT: BusSnapshotContext = Object.freeze({
   lowEtaSameStopOverlapCount: 0,
 })
 
+const ISOLATED_ETA_SPIKE_MINUTES = 15
+const ETA_NEIGHBOR_CONSISTENCY_MINUTES = 5
+
 export function collectActiveBuses(results: StationArrivals[]): ActiveBusGroup[] {
   const buses = new Map<string, ActiveBusGroup>()
 
@@ -62,7 +65,9 @@ export function collectActiveBuses(results: StationArrivals[]): ActiveBusGroup[]
         buses.set(trackingKey, {
           trackingKey,
           busId: arrival.busId,
+          serviceId: arrival.serviceId,
           lineRef: arrival.lineRef,
+          directionName: arrival.directionName,
           predictions: [],
         })
       }
@@ -76,6 +81,31 @@ export function collectActiveBuses(results: StationArrivals[]): ActiveBusGroup[]
   })
 
   return [...buses.values()]
+}
+
+export function filterPredictionOutliers(
+  line: Line,
+  predictions: BusPrediction[],
+): BusPrediction[] {
+  const predictionByStop = new Map(
+    predictions.map((prediction) => [prediction.station.id, prediction]),
+  )
+
+  return predictions.filter((prediction) => {
+    const stopIndex = line.stops.findIndex((stop) => stop.id === prediction.station.id)
+    if (stopIndex <= 0 || stopIndex >= line.stops.length - 1) return true
+
+    const previous = predictionByStop.get(line.stops[stopIndex - 1].id)
+    const next = predictionByStop.get(line.stops[stopIndex + 1].id)
+    if (!previous || !next) return true
+
+    const neighborsAreConsistent =
+      Math.abs(previous.minutes - next.minutes) <= ETA_NEIGHBOR_CONSISTENCY_MINUTES
+    const isIsolatedSpike =
+      prediction.minutes - Math.max(previous.minutes, next.minutes) >= ISOLATED_ETA_SPIKE_MINUTES
+
+    return !(neighborsAreConsistent && isIsolatedSpike)
+  })
 }
 
 export function buildSnapshotContext(
@@ -454,8 +484,10 @@ export function resolveSuppressionReason(
 interface BuildBusTrackingDiagnosticArgs {
   trackingKey: string
   busId: string
+  serviceId: string
   lineRef: string
   lineName: string
+  directionName: string
   prediction: BusPrediction
   resolvedSegment: ResolvedBusSegment | null
   exactMinutesAway: number
@@ -472,8 +504,10 @@ interface BuildBusTrackingDiagnosticArgs {
 export function buildBusTrackingDiagnostic({
   trackingKey,
   busId,
+  serviceId,
   lineRef,
   lineName,
+  directionName,
   prediction,
   resolvedSegment,
   exactMinutesAway,
@@ -489,8 +523,10 @@ export function buildBusTrackingDiagnostic({
   return {
     trackingKey,
     busId,
+    serviceId,
     lineRef,
     lineName,
+    directionName,
     previousStopName: resolvedSegment?.previousStop.name ?? 'Unknown',
     nextStopName: resolvedSegment?.nextStop.name ?? prediction.station.name,
     renderState,

@@ -26,8 +26,11 @@ export interface Line {
 
 export interface Arrival {
   busId: string
+  serviceId: string
   minutes: number
   lineRef: string
+  directionName: string
+  isValid: boolean
 }
 
 export interface Topology {

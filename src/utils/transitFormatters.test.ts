@@ -23,6 +23,32 @@ describe('buildBusPopup', () => {
     expect(popup).toContain('>Alta<')
   })
 
+  it('shows the direction reported by the service', () => {
+    const prediction: BusPrediction = {
+      station: {
+        id: '359',
+        name: 'TXOPOETA',
+        lat: 43,
+        lng: -3,
+        position: [-3, 43],
+      },
+      minutes: 1,
+      lineRef: 'L.1 LEIOA',
+    }
+
+    expect(
+      buildBusPopup(
+        '306',
+        prediction,
+        'LINEA 1 SAN BARTOLOME',
+        'moving',
+        'high',
+        0,
+        'METRO LAMIAKO (DIRECCION AMAIA)',
+      ),
+    ).toContain('Hacia METRO LAMIAKO (DIRECCION AMAIA)')
+  })
+
   it('makes stale upstream information visible to the user', () => {
     const prediction: BusPrediction = {
       station: {

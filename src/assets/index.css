@@ -175,10 +175,17 @@ html,
 }
 
 .bus-popup__line {
-  margin: 3px 0 10px;
+  margin: 3px 0 2px;
   color: var(--text-light);
   font-size: 0.76rem;
   font-weight: 700;
+}
+
+.bus-popup__direction {
+  margin: 0 0 10px;
+  color: var(--text-dark);
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .confidence-badge {

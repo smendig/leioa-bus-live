@@ -36,7 +36,8 @@ export function buildArrivalsPopup(
     .sort((left, right) => left.minutes - right.minutes)
     .map((arrival) => {
       const timeLabel = formatEta(arrival.minutes)
-      return `<li><strong class="arrival-time">${timeLabel}</strong><span>${escapeHtml(resolveLineName(arrival.lineRef))}</span></li>`
+      const destination = arrival.directionName || resolveLineName(arrival.lineRef)
+      return `<li><strong class="arrival-time">${timeLabel}</strong><span>${escapeHtml(destination)}</span></li>`
     })
     .join('')
 
@@ -50,6 +51,7 @@ export function buildBusPopup(
   renderState: BusRenderState,
   confidenceLabel: BusConfidenceLabel,
   predictionAgeSeconds = 0,
+  directionName = '',
 ): string {
   const stateLabel =
     renderState === 'moving'
@@ -69,6 +71,7 @@ export function buildBusPopup(
         <span class="confidence-badge confidence-badge--${confidenceLabel}">${confidenceText}</span>
       </div>
       <p class="bus-popup__line">${escapeHtml(lineName)}</p>
+      ${directionName ? `<p class="bus-popup__direction">Hacia ${escapeHtml(directionName)}</p>` : ''}
       <dl>
         <div><dt>Estado</dt><dd>${stateLabel}</dd></div>
         <div><dt>Próxima parada</dt><dd>${escapeHtml(prediction.station.name)}</dd></div>

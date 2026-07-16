@@ -32,6 +32,8 @@ const hasDiagnostics = computed(() => props.diagnostics.length > 0)
     <ul class="debug-list">
       <li v-for="diagnostic in props.diagnostics" :key="diagnostic.trackingKey" class="debug-item">
         <strong>Bus {{ diagnostic.busId }} · {{ diagnostic.lineName }}</strong>
+        <span>Service: {{ diagnostic.serviceId || 'unknown' }}</span>
+        <span>Direction: {{ diagnostic.directionName || 'unknown' }}</span>
         <span>{{ diagnostic.previousStopName }} -> {{ diagnostic.nextStopName }}</span>
         <span>Render state: {{ diagnostic.renderState }}</span>
         <span>ETA next: {{ diagnostic.minutesToNextStop }} min</span>

@@ -38,6 +38,7 @@ import {
   buildSnapshotContext,
   collectActiveBuses,
   EMPTY_SNAPSHOT_CONTEXT,
+  filterPredictionOutliers,
   resolveBusRenderState,
   resolveBusSegment,
   resolveMissingBus,
@@ -316,14 +317,18 @@ export function useTransitMap() {
     const snapshotContext = buildSnapshotContext(activeBusGroups)
 
     activeBusGroups.forEach((group) => {
-      const { busId, lineRef, predictions, trackingKey } = group
-      predictions.sort((left, right) => left.minutes - right.minutes)
-      const closestPrediction = predictions[0]
+      const { busId, directionName, lineRef, serviceId, trackingKey } = group
 
       const routeLine = linesCache.value.find((line) => line.ref === lineRef)
       if (!routeLine) {
         return
       }
+
+      const predictions = filterPredictionOutliers(routeLine, group.predictions).sort(
+        (left, right) => left.minutes - right.minutes,
+      )
+      const closestPrediction = predictions[0]
+      if (!closestPrediction) return
 
       const historyState = updatePredictionHistory(
         predictionHistory,
@@ -365,8 +370,10 @@ export function useTransitMap() {
         buildBusTrackingDiagnostic({
           trackingKey,
           busId,
+          serviceId,
           lineRef,
           lineName: routeLine.name,
+          directionName,
           prediction: closestPrediction,
           resolvedSegment,
           exactMinutesAway,
@@ -402,6 +409,7 @@ export function useTransitMap() {
         lng,
         closestPrediction,
         routeLine.name,
+        directionName,
         lineRef,
         confidence.label,
         renderState,
@@ -419,6 +427,7 @@ export function useTransitMap() {
     lng: number,
     prediction: BusPrediction,
     lineName: string,
+    directionName: string,
     lineRef: string,
     confidenceLabel: 'high' | 'medium' | 'low',
     renderState: BusTrackingDiagnostic['renderState'],
@@ -434,6 +443,7 @@ export function useTransitMap() {
       renderState,
       confidenceLabel,
       predictionAgeSeconds,
+      directionName,
     )
     const opacity = confidenceLabel === 'high' ? 1 : confidenceLabel === 'medium' ? 0.82 : 0.64
 

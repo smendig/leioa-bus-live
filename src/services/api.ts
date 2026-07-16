@@ -41,9 +41,11 @@ interface RawDirection {
 
 interface RawArrival {
   IdBus: string | number
+  IdServicio?: string | number
   Minutes: string | number
   LRef: string | number
-  LName: string
+  LName?: string
+  Valid?: boolean | string | number
 }
 
 interface LinesResponse extends ApiResponseBase {
@@ -157,7 +159,10 @@ export async function getArrivalsDetailed(spRef: string): Promise<ArrivalsResult
     return { arrivals: [], isSuccessful: false }
   }
 
-  return { arrivals: data.Arrivals.map(normalizeArrival), isSuccessful: true }
+  return {
+    arrivals: data.Arrivals.map(normalizeArrival).filter((arrival) => arrival.isValid),
+    isSuccessful: true,
+  }
 }
 
 function normalizeStation(station: RawStation): Station {
@@ -185,9 +190,18 @@ function normalizeLine(line: RawLine): Line {
 function normalizeArrival(arrival: RawArrival): Arrival {
   return {
     busId: String(arrival.IdBus),
+    serviceId: String(arrival.IdServicio ?? ''),
     minutes: Number.parseInt(String(arrival.Minutes), 10),
     lineRef: String(arrival.LRef),
+    directionName: String(arrival.LName ?? '').trim(),
+    isValid: normalizeArrivalValidity(arrival.Valid),
   }
+}
+
+function normalizeArrivalValidity(value: RawArrival['Valid']): boolean {
+  if (value === undefined || value === null) return true
+  if (typeof value === 'boolean') return value
+  return !['0', 'false'].includes(String(value).trim().toLowerCase())
 }
 
 function normalizeLineStops(stops: RawStation[]): LineStop[] {

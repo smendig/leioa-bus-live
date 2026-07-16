@@ -7,6 +7,7 @@ import {
   assessPredictionConfidence,
   collectActiveBuses,
   EMPTY_SNAPSHOT_CONTEXT,
+  filterPredictionOutliers,
   resolveBusSegment,
   resolveMissingBus,
   resolveSegmentProgress,
@@ -42,13 +43,66 @@ describe('collectActiveBuses', () => {
         station: station('358'),
         isSuccessful: true,
         arrivals: [
-          { busId: '0', minutes: 3, lineRef: line.ref },
-          { busId: '306', minutes: 4, lineRef: line.ref },
+          {
+            busId: '0',
+            serviceId: '',
+            minutes: 3,
+            lineRef: line.ref,
+            directionName: '',
+            isValid: true,
+          },
+          {
+            busId: '306',
+            serviceId: '1967',
+            minutes: 4,
+            lineRef: line.ref,
+            directionName: 'METRO LAMIAKO',
+            isValid: true,
+          },
         ],
       },
     ]
 
-    expect(collectActiveBuses(results).map((group) => group.busId)).toEqual(['306'])
+    expect(collectActiveBuses(results)).toMatchObject([
+      { busId: '306', serviceId: '1967', directionName: 'METRO LAMIAKO' },
+    ])
+  })
+})
+
+describe('prediction outlier filtering', () => {
+  it('removes an isolated spike while preserving the route rollover', () => {
+    const empiricalLine: Line = {
+      ...line,
+      stops: ['350', '351', '352', '358', '359', '363'].map((id, sequence) => ({
+        ...station(id),
+        sequence,
+      })),
+    }
+    const predictions = [
+      ['350', 29],
+      ['351', 150],
+      ['352', 31],
+      ['358', 40],
+      ['359', 1],
+      ['363', 3],
+    ].map(([id, minutes]) => ({
+      station: station(String(id)),
+      minutes: Number(minutes),
+      lineRef: empiricalLine.ref,
+    }))
+
+    expect(
+      filterPredictionOutliers(empiricalLine, predictions).map((prediction) => [
+        prediction.station.id,
+        prediction.minutes,
+      ]),
+    ).toEqual([
+      ['350', 29],
+      ['352', 31],
+      ['358', 40],
+      ['359', 1],
+      ['363', 3],
+    ])
   })
 })
 

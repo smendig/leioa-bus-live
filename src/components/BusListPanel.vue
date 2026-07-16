@@ -45,7 +45,8 @@ const isOpen = ref(false)
         </span>
         <span class="bus-row__main">
           <strong>Bus {{ bus.busId }}</strong>
-          <small>{{ bus.nextStopName }}</small>
+          <small>{{ bus.directionName || bus.lineName }}</small>
+          <small>Próxima: {{ bus.nextStopName }}</small>
           <small class="bus-row__confidence" :class="`is-${bus.confidenceLabel}`">
             {{ formatBusSignal(bus.confidenceLabel, bus.predictionAgeSeconds) }}
           </small>

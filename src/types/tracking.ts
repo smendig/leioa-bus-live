@@ -14,7 +14,9 @@ export interface BusPrediction {
 export interface ActiveBusGroup {
   trackingKey: string
   busId: string
+  serviceId: string
   lineRef: string
+  directionName: string
   predictions: BusPrediction[]
 }
 
@@ -61,8 +63,10 @@ export interface ResolvedBusSegment {
 export interface BusTrackingDiagnostic {
   trackingKey: string
   busId: string
+  serviceId: string
   lineRef: string
   lineName: string
+  directionName: string
   previousStopName: string
   nextStopName: string
   renderState: BusRenderState
