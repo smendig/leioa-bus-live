@@ -1,6 +1,7 @@
 import { TRANSIT_PUBLIC_GROUP_ID, TRANSIT_PUBLIC_LANG } from '../config/transit'
 import type { Arrival, Line, LineStop, Station, Topology } from '../types/transit'
 import { createAesCbcCipher } from '../utils/aes'
+import { isTopology } from './topology'
 
 const API_URL = getRequiredEnv('VITE_BUS_API_URL').replace(/\/+$/, '')
 const CIPHER = createAesCbcCipher(
@@ -8,6 +9,9 @@ const CIPHER = createAesCbcCipher(
   getRequiredEnv('VITE_BUS_AES_IV'),
 )
 const API_REQUEST_TIMEOUT_MS = 10_000
+const TOPOLOGY_REQUEST_TIMEOUT_MS = 4_000
+const BUNDLED_TOPOLOGY_TIMEOUT_MS = 3_000
+const BUNDLED_TOPOLOGY_URL = `${import.meta.env.BASE_URL}topology.json`
 
 const BASE_PAYLOAD = {
   ApiUser: getRequiredEnv('VITE_BUS_API_USER'),
@@ -83,7 +87,11 @@ async function decryptPayload<T>(encryptedBase64: string): Promise<T | null> {
   }
 }
 
-async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promise<T | null> {
+async function makeRequest<T>(
+  endpoint: string,
+  payload: ApiPayload = {},
+  timeoutMs = API_REQUEST_TIMEOUT_MS,
+): Promise<T | null> {
   const encPayload = await encryptPayload(payload)
   const params = new URLSearchParams({
     jsonInput: encPayload,
@@ -95,7 +103,7 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
     const response = await fetch(`${API_URL}${endpoint}?${params.toString()}`, {
       method: 'GET',
       cache: 'no-store',
-      signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
     })
 
     if (!response.ok) {
@@ -116,17 +124,55 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
 
 export async function getTopology(): Promise<Topology> {
   const [linesData, stationsData] = await Promise.all([
-    makeRequest<LinesResponse>('/Lines', { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } }),
-    makeRequest<StationsResponse>('/Stations', { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } }),
+    makeRequest<LinesResponse>(
+      '/Lines',
+      { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } },
+      TOPOLOGY_REQUEST_TIMEOUT_MS,
+    ),
+    makeRequest<StationsResponse>(
+      '/Stations',
+      { search: { IdGroup: TRANSIT_PUBLIC_GROUP_ID } },
+      TOPOLOGY_REQUEST_TIMEOUT_MS,
+    ),
   ])
 
-  if (linesData?.Error !== '0' || stationsData?.Error !== '0') {
-    throw new Error('No se ha podido obtener la topología de Leioa')
+  if (
+    linesData?.Error === '0' &&
+    stationsData?.Error === '0' &&
+    Array.isArray(linesData.Lines) &&
+    Array.isArray(stationsData.Stops)
+  ) {
+    return {
+      lines: linesData.Lines.map(normalizeLine),
+      stations: stationsData.Stops.map(normalizeStation),
+    }
   }
 
-  return {
-    lines: linesData.Lines.map(normalizeLine),
-    stations: stationsData.Stops.map(normalizeStation),
+  const bundledTopology = await loadBundledTopology()
+  if (bundledTopology) return bundledTopology
+
+  throw new Error('No se ha podido obtener la topología de Leioa')
+}
+
+async function loadBundledTopology(): Promise<Topology | null> {
+  try {
+    const response = await fetch(BUNDLED_TOPOLOGY_URL, {
+      cache: 'force-cache',
+      signal: AbortSignal.timeout(BUNDLED_TOPOLOGY_TIMEOUT_MS),
+    })
+    if (!response.ok) return null
+
+    const snapshot: unknown = await response.json()
+    if (!isTopology(snapshot)) {
+      console.error('Bundled topology snapshot is invalid')
+      return null
+    }
+
+    console.warn('Using bundled topology because the live topology is unavailable')
+    return snapshot
+  } catch (error) {
+    console.error('Failed to load bundled topology', error)
+    return null
   }
 }
 

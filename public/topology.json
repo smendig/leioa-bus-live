@@ -1,0 +1,772 @@
+{
+  "capturedAt": "2026-07-16T12:25:50.587453Z",
+  "lines": [
+    {
+      "ref": "L.1 LEIOA",
+      "name": "LINEA 1 SAN BARTOLOME",
+      "encodedPath": "{wlgGtljQIIKOEM?M?M?KFGDU?SCMGIAGFg@@MHQRY\\q@Xg@`@u@L[p@gBj@}Ab@iAL_@Tq@j@}AVs@v@sBd@oAj@uA^y@HUPWPk@Vo@~@eCd@wA`@{A`@mBb@yBp@wDTgAb@_CZ{AFm@N}@PcAXwA^kBVsAP_ADOHUNY^u@HOHKDYCWIK?O?Q@Q?a@?u@AcB?o@G]Us@Ua@Oe@OaAMq@?Y@MBSCSIQMAMCQOK[Yk@Wu@_@aAi@iA[q@W_@k@u@Q[USSUa@MWMQQSKS@SPODe@?eEBaCDgC?gAB]?MKWU]a@[YoAdCaD{CVe@d@Db@o@p@iBESgBROIKMMGwCCa@IKSBc@JYb@Ut@a@f@UtAu@z@a@z@a@XSNYDKF?H@f@b@^^??TPLHZRb@\\Zq@tAaDJGHF^ZCNWn@c@jA_@dAq@pBs@hBq@zAwBrE}BzFITSBUOiB_ByAyAgB_BuAoAq@_@q@SmACa@]c@A[\\yCAqBKwAe@iAaA_AaA{@o@s@Ku@Bo@CKQQQW@YMQo@KeAUaBS_B[gBYyAg@iAg@y@u@_AUe@Ie@BiANeAL{@H{@@gAAaACo@Fi@Hm@XeBPaARwALeA^{AX{Af@sBTo@T[Rg@Gi@YS]DQ\\CXJZAn@WfBg@vBc@rBWhBUpAUbBQ`AGxA@t@A`B_@xCObBFf@T`@j@|@dA`Bj@~AXlBV~ATzAPjALbAVt@DXFTNNFDEr@Ar@CfBCnAElACRE\\DTLNJXVtATvAI`@OXFTVJPFNd@\\`BTnAVn@n@f@d@f@TZZd@v@h@~@v@Df@L\\b@?TWAq@]Wc@Jc@]}@m@e@c@k@{@k@k@]YUo@YsAWwA]w@Ea@u@Mk@UiASy@?q@L]RYZQ\\Ij@Cd@PhCNdBH~@QRDf@eAdAqAnAMRERPZhAtDPn@BRAPDRNJPCFIvAd@XLDJAR[nB_@vBuAvGMx@s@`BYr@qA~CAZ\\ThBlAvBlArBnANNP?r@PV?LGROPe@r@aBv@sBhBmENKHMGWh@wA`@_A|@oAl@}@`@q@b@}AJURg@dCwCxAmBz@aBb@{ALaA?a@@OHEFG~ArAJTDRTTN?PGN_@b@}@b@iAf@uAjAmC`@kAjAiClA{CJUrB{Fp@{ANGl@AtBEjB@vDExCCz@DDTFTTPP@Bb@?jA@`B@dALdABNQ^AZH\\TXX?NIFGb@Xh@~@b@bAp@zA^fAZbATd@nA`At@tATh@E`@Bd@HZCV[l@Md@a@xBq@nDm@|Ca@hCg@hCy@zE{@fEWdAc@zAk@zAcAtCs@bB_@jAu@|Aq@lBw@rBaApCs@dBm@dBw@hBq@|As@tAa@r@Q^]h@KR@ZLRPJ|@s@`AkA~@_BHHp@lAGVy@xA{@tAYj@KFQSMQ",
+      "stops": [
+        {
+          "id": "341",
+          "name": "AREETA ANBULATORIOA",
+          "lat": 43.324306,
+          "lng": -3.007613,
+          "position": [-3.007613, 43.324306],
+          "sequence": 0
+        },
+        {
+          "id": "342",
+          "name": "METRO LAMIAKO",
+          "lat": 43.321604,
+          "lng": -3.001011,
+          "position": [-3.001011, 43.321604],
+          "sequence": 1
+        },
+        {
+          "id": "343",
+          "name": "TXOPOETA",
+          "lat": 43.319483,
+          "lng": -2.994798,
+          "position": [-2.994798, 43.319483],
+          "sequence": 2
+        },
+        {
+          "id": "344",
+          "name": "METRO LEIOA ( SENTIDO LEIOA)",
+          "lat": 43.318502,
+          "lng": -2.991117,
+          "position": [-2.991117, 43.318502],
+          "sequence": 3
+        },
+        {
+          "id": "345",
+          "name": "LIBANO (DIRECCION LEIOA)",
+          "lat": 43.322894,
+          "lng": -2.985912,
+          "position": [-2.985912, 43.322894],
+          "sequence": 4
+        },
+        {
+          "id": "346",
+          "name": "ITURRIBIDE",
+          "lat": 43.326132,
+          "lng": -2.984439,
+          "position": [-2.984439, 43.326132],
+          "sequence": 5
+        },
+        {
+          "id": "347",
+          "name": "IKEA",
+          "lat": 43.325967,
+          "lng": -2.983148,
+          "position": [-2.983148, 43.325967],
+          "sequence": 6
+        },
+        {
+          "id": "348",
+          "name": "DONIBANE SAN JUAN ",
+          "lat": 43.324268,
+          "lng": -2.983276,
+          "position": [-2.983276, 43.324268],
+          "sequence": 7
+        },
+        {
+          "id": "349",
+          "name": "KULTUR LEIOA",
+          "lat": 43.325711,
+          "lng": -2.986827,
+          "position": [-2.986827, 43.325711],
+          "sequence": 8
+        },
+        {
+          "id": "350",
+          "name": "ALDEKOENA",
+          "lat": 43.330773,
+          "lng": -2.985166,
+          "position": [-2.985166, 43.330773],
+          "sequence": 9
+        },
+        {
+          "id": "351",
+          "name": "INSTITUTUA",
+          "lat": 43.333828,
+          "lng": -2.974073,
+          "position": [-2.974073, 43.333828],
+          "sequence": 10
+        },
+        {
+          "id": "352",
+          "name": "SARRIENA",
+          "lat": 43.333244,
+          "lng": -2.984903,
+          "position": [-2.984903, 43.333244],
+          "sequence": 11
+        },
+        {
+          "id": "353",
+          "name": "ARTATZAGANA",
+          "lat": 43.332498,
+          "lng": -2.988997,
+          "position": [-2.988997, 43.332498],
+          "sequence": 12
+        },
+        {
+          "id": "354",
+          "name": "SAN BARTOLOMÉ",
+          "lat": 43.334226,
+          "lng": -2.992887,
+          "position": [-2.992887, 43.334226],
+          "sequence": 13
+        },
+        {
+          "id": "355",
+          "name": "JOAQUIN ACHUCARRO",
+          "lat": 43.335093,
+          "lng": -2.996438,
+          "position": [-2.996438, 43.335093],
+          "sequence": 14
+        },
+        {
+          "id": "356",
+          "name": "BASAEZ",
+          "lat": 43.334979,
+          "lng": -2.998207,
+          "position": [-2.998207, 43.334979],
+          "sequence": 15
+        },
+        {
+          "id": "357",
+          "name": "ARTATZA",
+          "lat": 43.332086,
+          "lng": -2.997053,
+          "position": [-2.997053, 43.332086],
+          "sequence": 16
+        },
+        {
+          "id": "358",
+          "name": "IPARRAGIRRE",
+          "lat": 43.327526,
+          "lng": -2.991309,
+          "position": [-2.991309, 43.327526],
+          "sequence": 17
+        },
+        {
+          "id": "359",
+          "name": "BULEBARRA",
+          "lat": 43.325843,
+          "lng": -2.987965,
+          "position": [-2.987965, 43.325843],
+          "sequence": 18
+        },
+        {
+          "id": "363",
+          "name": "LIBANO(DIRECCION AMAIA)",
+          "lat": 43.322871,
+          "lng": -2.986042,
+          "position": [-2.986042, 43.322871],
+          "sequence": 19
+        },
+        {
+          "id": "360",
+          "name": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+          "lat": 43.318933,
+          "lng": -2.991524,
+          "position": [-2.991524, 43.318933],
+          "sequence": 20
+        },
+        {
+          "id": "361",
+          "name": "TXOPOETA ( DIRECCION AMAIA)",
+          "lat": 43.319557,
+          "lng": -2.994684,
+          "position": [-2.994684, 43.319557],
+          "sequence": 21
+        },
+        {
+          "id": "362",
+          "name": "METRO LAMIAKO (DIRECCION AMAIA)",
+          "lat": 43.321663,
+          "lng": -3.000885,
+          "position": [-3.000885, 43.321663],
+          "sequence": 22
+        }
+      ]
+    },
+    {
+      "ref": "L.2 LEIOA",
+      "name": "LINEA 2 TXORIERRI",
+      "encodedPath": "wplgG~phQ@m@@{@D}@BiAKi@eAw@a@SKHGp@G|AEhAM?y@a@u@_@??}@a@}@[i@O[_@Sq@Mq@EiARiCd@kDP{ADOTKFUEUIM?_BSy@m@e@a@Oy@Pk@r@Uh@WX_@?WS}@u@?YOMUBuBsBDc@t@qAlAmDlBmEtCeHhDiIJIjBIxB@xAA|BEhEC\\N@DBRJPTFJL@bA@|A@zANbBQj@@\\JVRNN@RGJKz@z@hAfCr@fBZjAZt@nA~@l@fA^x@Et@Hb@B`@o@~A_@`Ci@tB]tBk@bDg@rCy@xDa@|B_AfE{@xCgAzCkAxC}@dCiAvCkA~C{@~Bu@nBq@dBk@zAs@|Ay@|A[j@IPUREh@V\\VDPOHUb@O~@yAh@}@BEXVf@r@ENa@p@o@bAm@bAa@p@IKQS[c@Cg@?KDWF[EWGKKEM?QN_@H][c@m@g@m@GGONU`AIn@_@Ie@QmA[{A_@cCs@{@]uAy@eBkAwAy@gBiA}BsA}BsAwBqA}@iAiAyAq@uAa@kAEc@TaA`@yAjAwCpA_EhAyBdAoBz@oBp@cBv@}Av@wBh@gAzEkMlBiFbA{CZu@nBiFf@kAjAoCfB{Er@yAjAsCt@kBH_@c@_@[T_@|@iAlCy@`C{@lBw@fBcBhEkB~EeA|B_@nA@^ZNVDXNrApAJRHNNDRBhA`A^FPIRON]^o@ZSl@In@RZd@Jx@A|@SNKN@RLTU~AMbAc@pDEx@?z@FfANp@Rb@`@ZvAd@xDfBT@BUDgABo@F_ABUtA~@NX@~@IlBCpA",
+      "stops": [
+        {
+          "id": "364",
+          "name": "TXORIERRI",
+          "lat": 43.323257,
+          "lng": -2.998046,
+          "position": [-2.998046, 43.323257],
+          "sequence": 0
+        },
+        {
+          "id": "365",
+          "name": "INDEPENDENTZIA (DIRECCION AMAIA)",
+          "lat": 43.325616,
+          "lng": -2.995831,
+          "position": [-2.995831, 43.325616],
+          "sequence": 1
+        },
+        {
+          "id": "366",
+          "name": "TORRESOLO ( DIRECCION AMAIA)",
+          "lat": 43.325898,
+          "lng": -2.992225,
+          "position": [-2.992225, 43.325898],
+          "sequence": 2
+        },
+        {
+          "id": "358",
+          "name": "IPARRAGIRRE",
+          "lat": 43.327526,
+          "lng": -2.991309,
+          "position": [-2.991309, 43.327526],
+          "sequence": 3
+        },
+        {
+          "id": "359",
+          "name": "BULEBARRA",
+          "lat": 43.325843,
+          "lng": -2.987965,
+          "position": [-2.987965, 43.325843],
+          "sequence": 4
+        },
+        {
+          "id": "363",
+          "name": "LIBANO(DIRECCION AMAIA)",
+          "lat": 43.322871,
+          "lng": -2.986042,
+          "position": [-2.986042, 43.322871],
+          "sequence": 5
+        },
+        {
+          "id": "360",
+          "name": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+          "lat": 43.318933,
+          "lng": -2.991524,
+          "position": [-2.991524, 43.318933],
+          "sequence": 6
+        },
+        {
+          "id": "361",
+          "name": "TXOPOETA ( DIRECCION AMAIA)",
+          "lat": 43.319557,
+          "lng": -2.994684,
+          "position": [-2.994684, 43.319557],
+          "sequence": 7
+        },
+        {
+          "id": "362",
+          "name": "METRO LAMIAKO (DIRECCION AMAIA)",
+          "lat": 43.321663,
+          "lng": -3.000885,
+          "position": [-3.000885, 43.321663],
+          "sequence": 8
+        },
+        {
+          "id": "341",
+          "name": "AREETA ANBULATORIOA",
+          "lat": 43.324306,
+          "lng": -3.007613,
+          "position": [-3.007613, 43.324306],
+          "sequence": 9
+        },
+        {
+          "id": "395",
+          "name": "PINUETA",
+          "lat": 43.327423,
+          "lng": -3.006216,
+          "position": [-3.006216, 43.327423],
+          "sequence": 10
+        },
+        {
+          "id": "368",
+          "name": "PINOSOLO",
+          "lat": 43.330043,
+          "lng": -2.996531,
+          "position": [-2.996531, 43.330043],
+          "sequence": 11
+        },
+        {
+          "id": "396",
+          "name": "IPARRAGIRRE (DIRECC. TXORIERRI)",
+          "lat": 43.327526,
+          "lng": -2.991309,
+          "position": [-2.991309, 43.327526],
+          "sequence": 12
+        },
+        {
+          "id": "397",
+          "name": "BULEBARRA (DIRECC. TXORIERRI)",
+          "lat": 43.325843,
+          "lng": -2.987965,
+          "position": [-2.987965, 43.325843],
+          "sequence": 13
+        },
+        {
+          "id": "369",
+          "name": "TORRESOLO ( DIRECCION TXORIERRI)",
+          "lat": 43.325366,
+          "lng": -2.993472,
+          "position": [-2.993472, 43.325366],
+          "sequence": 14
+        },
+        {
+          "id": "370",
+          "name": "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+          "lat": 43.324765,
+          "lng": -2.997017,
+          "position": [-2.997017, 43.324765],
+          "sequence": 15
+        }
+      ]
+    },
+    {
+      "ref": "L.UNICA",
+      "name": "LINEA UNICA",
+      "encodedPath": "_tkgG~hgQBeGo@eBa@mBUkAL_@Gg@UM[CUm@a@gAo@{Ae@cAy@yAgAsA{@k@]OYQ[?ILGHW?qACyABgB@aCDuB@{@?_@OaA_ASAe@jAQ`@Q@i@a@gBeB?Q@IJOX?ZU`@aA^y@?]sBTUQ}@QoBEWUC]FS|@c@j@c@`CgAnAs@h@_@PYPQtBpBr@d@f@aArA_DF@f@`@ARs@`Bk@hBeAtCmAvCy@`BQl@g@jAeAfC{@xBYHk@a@gAeAaAcAo@k@s@s@kAaA}@y@i@Ui@KcAEYOQW]EYPITkAAcCC_AGs@S}@g@w@q@o@o@]a@c@[cAI}@DWSUSYFMNAVFVNPAlAEx@?l@EvACrAGh@EXDZTNNfAXpAHj@QTI^HZVHL@Rz@`@jBRhAn@p@l@b@b@x@~AtAj@b@DB@XH^XL\\MJ_@?e@]Qc@Fa@YyAaA_@i@a@q@m@c@[e@M[Q{@]qAUsAGUKSqCq@qA@gAP]b@[`AA|AZxEHf@O\\A^mCrCQP?b@b@~@h@lBRn@F`@@j@RNZIn@NbAb@CVS|Ao@bDs@tD[jBq@dBo@~AaAzBGf@PJ`DzBfC|Ar@\\lAd@p@Ch@u@b@iAj@wAvAkDd@kAVWJQC]\\}@h@iAx@sA~@sAZs@VoANUHYpAyA`BmB`B_C`@kA^_C@m@VMvAzAHZf@f@NI^ZlAfAJL?LHNPBN@hA`Ad@HVOVc@\\m@h@]r@Ab@P`@x@DdAGb@ULERDVJLWvAQrAS~AQnB?z@@n@L`AVr@d@^dA`@lBz@bBv@L@Dy@L{C@QDCFDl@^b@ZN^KxEF`@BYLsEIk@sB{AGPOxCE~@IBgCkAyAk@{@a@SWO_@QsAAs@NqBJqAP}AT_BJc@NKFQ?[MOBs@?g@Mm@jJxd@oLqf@_@C]F_@N_@l@Sb@WVS@SM{@s@KOESKKQ@c@_@e@g@c@c@IQL]Pi@~@wBhBoE`BuDpBaFxCiHZIz@KlA?tAAvBC~CE~AAt@DBPFXVPN?BP@`A?n@@nA@lALz@@PK^EXD\\VX\\?TOb@\\x@rAn@~Af@nA\\jAb@bAhAz@l@dAd@~@EPEZFZNLQ`@i@|Ai@rCOx@y@tEkBrJsBrKwCxIEHsCjH_BbEmBlF_BjEuBlE_@p@GZUNKXAPFZNLN?TMHYd@Qj@w@bAiBbAzA_A|Ay@rAk@bAGFk@w@QWAe@?K@GFOBO?MCQEI?SDYBSR_@NYTc@Tc@Xo@Zs@Na@HYPa@Vs@JYL[Ri@Xu@Ne@Rm@N_@J[Zw@Vq@Pe@LYVo@Xw@Zu@Xu@Rk@Xs@Vs@Tk@f@wAb@oATu@XiA`@iBVmAb@aCR_A^qB^mBf@iCn@sDVyAJk@`@uBJa@j@wAFOHCNGFO@MCYGOAG?Q",
+      "stops": [
+        {
+          "id": "341",
+          "name": "AREETA ANBULATORIOA",
+          "lat": 43.324306,
+          "lng": -3.007613,
+          "position": [-3.007613, 43.324306],
+          "sequence": 0
+        },
+        {
+          "id": "342",
+          "name": "METRO LAMIAKO",
+          "lat": 43.321604,
+          "lng": -3.001011,
+          "position": [-3.001011, 43.321604],
+          "sequence": 1
+        },
+        {
+          "id": "343",
+          "name": "TXOPOETA",
+          "lat": 43.319483,
+          "lng": -2.994798,
+          "position": [-2.994798, 43.319483],
+          "sequence": 2
+        },
+        {
+          "id": "344",
+          "name": "METRO LEIOA ( SENTIDO LEIOA)",
+          "lat": 43.318502,
+          "lng": -2.991117,
+          "position": [-2.991117, 43.318502],
+          "sequence": 3
+        },
+        {
+          "id": "345",
+          "name": "LIBANO (DIRECCION LEIOA)",
+          "lat": 43.322894,
+          "lng": -2.985912,
+          "position": [-2.985912, 43.322894],
+          "sequence": 4
+        },
+        {
+          "id": "346",
+          "name": "ITURRIBIDE",
+          "lat": 43.326132,
+          "lng": -2.984439,
+          "position": [-2.984439, 43.326132],
+          "sequence": 5
+        },
+        {
+          "id": "347",
+          "name": "IKEA",
+          "lat": 43.325967,
+          "lng": -2.983148,
+          "position": [-2.983148, 43.325967],
+          "sequence": 6
+        },
+        {
+          "id": "348",
+          "name": "DONIBANE SAN JUAN ",
+          "lat": 43.324268,
+          "lng": -2.983276,
+          "position": [-2.983276, 43.324268],
+          "sequence": 7
+        },
+        {
+          "id": "349",
+          "name": "KULTUR LEIOA",
+          "lat": 43.325711,
+          "lng": -2.986827,
+          "position": [-2.986827, 43.325711],
+          "sequence": 8
+        },
+        {
+          "id": "350",
+          "name": "ALDEKOENA",
+          "lat": 43.330773,
+          "lng": -2.985166,
+          "position": [-2.985166, 43.330773],
+          "sequence": 9
+        },
+        {
+          "id": "352",
+          "name": "SARRIENA",
+          "lat": 43.333244,
+          "lng": -2.984903,
+          "position": [-2.984903, 43.333244],
+          "sequence": 10
+        },
+        {
+          "id": "353",
+          "name": "ARTATZAGANA",
+          "lat": 43.332498,
+          "lng": -2.988997,
+          "position": [-2.988997, 43.332498],
+          "sequence": 11
+        },
+        {
+          "id": "354",
+          "name": "SAN BARTOLOMÉ",
+          "lat": 43.334226,
+          "lng": -2.992887,
+          "position": [-2.992887, 43.334226],
+          "sequence": 12
+        },
+        {
+          "id": "355",
+          "name": "JOAQUIN ACHUCARRO",
+          "lat": 43.335093,
+          "lng": -2.996438,
+          "position": [-2.996438, 43.335093],
+          "sequence": 13
+        },
+        {
+          "id": "356",
+          "name": "BASAEZ",
+          "lat": 43.334979,
+          "lng": -2.998207,
+          "position": [-2.998207, 43.334979],
+          "sequence": 14
+        },
+        {
+          "id": "357",
+          "name": "ARTATZA",
+          "lat": 43.332086,
+          "lng": -2.997053,
+          "position": [-2.997053, 43.332086],
+          "sequence": 15
+        },
+        {
+          "id": "369",
+          "name": "TORRESOLO ( DIRECCION TXORIERRI)",
+          "lat": 43.325366,
+          "lng": -2.993472,
+          "position": [-2.993472, 43.325366],
+          "sequence": 16
+        },
+        {
+          "id": "370",
+          "name": "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+          "lat": 43.324765,
+          "lng": -2.997017,
+          "position": [-2.997017, 43.324765],
+          "sequence": 17
+        },
+        {
+          "id": "364",
+          "name": "TXORIERRI",
+          "lat": 43.323257,
+          "lng": -2.998046,
+          "position": [-2.998046, 43.323257],
+          "sequence": 18
+        },
+        {
+          "id": "358",
+          "name": "IPARRAGIRRE",
+          "lat": 43.327526,
+          "lng": -2.991309,
+          "position": [-2.991309, 43.327526],
+          "sequence": 19
+        },
+        {
+          "id": "359",
+          "name": "BULEBARRA",
+          "lat": 43.325843,
+          "lng": -2.987965,
+          "position": [-2.987965, 43.325843],
+          "sequence": 20
+        },
+        {
+          "id": "363",
+          "name": "LIBANO(DIRECCION AMAIA)",
+          "lat": 43.322871,
+          "lng": -2.986042,
+          "position": [-2.986042, 43.322871],
+          "sequence": 21
+        },
+        {
+          "id": "360",
+          "name": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+          "lat": 43.318933,
+          "lng": -2.991524,
+          "position": [-2.991524, 43.318933],
+          "sequence": 22
+        },
+        {
+          "id": "361",
+          "name": "TXOPOETA ( DIRECCION AMAIA)",
+          "lat": 43.319557,
+          "lng": -2.994684,
+          "position": [-2.994684, 43.319557],
+          "sequence": 23
+        },
+        {
+          "id": "362",
+          "name": "METRO LAMIAKO (DIRECCION AMAIA)",
+          "lat": 43.321663,
+          "lng": -3.000885,
+          "position": [-3.000885, 43.321663],
+          "sequence": 24
+        },
+        {
+          "id": "341",
+          "name": "AREETA ANBULATORIOA",
+          "lat": 43.324306,
+          "lng": -3.007613,
+          "position": [-3.007613, 43.324306],
+          "sequence": 25
+        }
+      ]
+    }
+  ],
+  "stations": [
+    {
+      "id": "341",
+      "name": "AREETA ANBULATORIOA",
+      "lat": 43.324306,
+      "lng": -3.007613,
+      "position": [-3.007613, 43.324306]
+    },
+    {
+      "id": "342",
+      "name": "METRO LAMIAKO",
+      "lat": 43.321604,
+      "lng": -3.001011,
+      "position": [-3.001011, 43.321604]
+    },
+    {
+      "id": "343",
+      "name": "TXOPOETA",
+      "lat": 43.319483,
+      "lng": -2.994798,
+      "position": [-2.994798, 43.319483]
+    },
+    {
+      "id": "344",
+      "name": "METRO LEIOA ( SENTIDO LEIOA)",
+      "lat": 43.318502,
+      "lng": -2.991117,
+      "position": [-2.991117, 43.318502]
+    },
+    {
+      "id": "345",
+      "name": "LIBANO (DIRECCION LEIOA)",
+      "lat": 43.322894,
+      "lng": -2.985912,
+      "position": [-2.985912, 43.322894]
+    },
+    {
+      "id": "346",
+      "name": "ITURRIBIDE",
+      "lat": 43.326132,
+      "lng": -2.984439,
+      "position": [-2.984439, 43.326132]
+    },
+    {
+      "id": "347",
+      "name": "IKEA",
+      "lat": 43.325967,
+      "lng": -2.983148,
+      "position": [-2.983148, 43.325967]
+    },
+    {
+      "id": "348",
+      "name": "DONIBANE SAN JUAN ",
+      "lat": 43.324268,
+      "lng": -2.983276,
+      "position": [-2.983276, 43.324268]
+    },
+    {
+      "id": "349",
+      "name": "KULTUR LEIOA",
+      "lat": 43.325711,
+      "lng": -2.986827,
+      "position": [-2.986827, 43.325711]
+    },
+    {
+      "id": "350",
+      "name": "ALDEKOENA",
+      "lat": 43.330773,
+      "lng": -2.985166,
+      "position": [-2.985166, 43.330773]
+    },
+    {
+      "id": "351",
+      "name": "INSTITUTUA",
+      "lat": 43.333828,
+      "lng": -2.974073,
+      "position": [-2.974073, 43.333828]
+    },
+    {
+      "id": "352",
+      "name": "SARRIENA",
+      "lat": 43.333244,
+      "lng": -2.984903,
+      "position": [-2.984903, 43.333244]
+    },
+    {
+      "id": "353",
+      "name": "ARTATZAGANA",
+      "lat": 43.332498,
+      "lng": -2.988997,
+      "position": [-2.988997, 43.332498]
+    },
+    {
+      "id": "354",
+      "name": "SAN BARTOLOMÉ",
+      "lat": 43.334226,
+      "lng": -2.992887,
+      "position": [-2.992887, 43.334226]
+    },
+    {
+      "id": "355",
+      "name": "JOAQUIN ACHUCARRO",
+      "lat": 43.335093,
+      "lng": -2.996438,
+      "position": [-2.996438, 43.335093]
+    },
+    {
+      "id": "356",
+      "name": "BASAEZ",
+      "lat": 43.334979,
+      "lng": -2.998207,
+      "position": [-2.998207, 43.334979]
+    },
+    {
+      "id": "357",
+      "name": "ARTATZA",
+      "lat": 43.332086,
+      "lng": -2.997053,
+      "position": [-2.997053, 43.332086]
+    },
+    {
+      "id": "358",
+      "name": "IPARRAGIRRE",
+      "lat": 43.327526,
+      "lng": -2.991309,
+      "position": [-2.991309, 43.327526]
+    },
+    {
+      "id": "359",
+      "name": "BULEBARRA",
+      "lat": 43.325843,
+      "lng": -2.987965,
+      "position": [-2.987965, 43.325843]
+    },
+    {
+      "id": "360",
+      "name": "METRO LEIOA ( SENTIDO AMAIA ETORBIDEA)",
+      "lat": 43.318933,
+      "lng": -2.991524,
+      "position": [-2.991524, 43.318933]
+    },
+    {
+      "id": "361",
+      "name": "TXOPOETA ( DIRECCION AMAIA)",
+      "lat": 43.319557,
+      "lng": -2.994684,
+      "position": [-2.994684, 43.319557]
+    },
+    {
+      "id": "362",
+      "name": "METRO LAMIAKO (DIRECCION AMAIA)",
+      "lat": 43.321663,
+      "lng": -3.000885,
+      "position": [-3.000885, 43.321663]
+    },
+    {
+      "id": "363",
+      "name": "LIBANO(DIRECCION AMAIA)",
+      "lat": 43.322871,
+      "lng": -2.986042,
+      "position": [-2.986042, 43.322871]
+    },
+    {
+      "id": "364",
+      "name": "TXORIERRI",
+      "lat": 43.323257,
+      "lng": -2.998046,
+      "position": [-2.998046, 43.323257]
+    },
+    {
+      "id": "365",
+      "name": "INDEPENDENTZIA (DIRECCION AMAIA)",
+      "lat": 43.325616,
+      "lng": -2.995831,
+      "position": [-2.995831, 43.325616]
+    },
+    {
+      "id": "366",
+      "name": "TORRESOLO ( DIRECCION AMAIA)",
+      "lat": 43.325898,
+      "lng": -2.992225,
+      "position": [-2.992225, 43.325898]
+    },
+    {
+      "id": "368",
+      "name": "PINOSOLO",
+      "lat": 43.330043,
+      "lng": -2.996531,
+      "position": [-2.996531, 43.330043]
+    },
+    {
+      "id": "369",
+      "name": "TORRESOLO ( DIRECCION TXORIERRI)",
+      "lat": 43.325366,
+      "lng": -2.993472,
+      "position": [-2.993472, 43.325366]
+    },
+    {
+      "id": "370",
+      "name": "INDEPENDENTZIA ( DIRECCION TXORIERRI)",
+      "lat": 43.324765,
+      "lng": -2.997017,
+      "position": [-2.997017, 43.324765]
+    },
+    {
+      "id": "395",
+      "name": "PINUETA",
+      "lat": 43.327423,
+      "lng": -3.006216,
+      "position": [-3.006216, 43.327423]
+    },
+    {
+      "id": "396",
+      "name": "IPARRAGIRRE (DIRECC. TXORIERRI)",
+      "lat": 43.327526,
+      "lng": -2.991309,
+      "position": [-2.991309, 43.327526]
+    },
+    {
+      "id": "397",
+      "name": "BULEBARRA (DIRECC. TXORIERRI)",
+      "lat": 43.325843,
+      "lng": -2.987965,
+      "position": [-2.987965, 43.325843]
+    }
+  ]
+}

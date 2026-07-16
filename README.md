@@ -17,6 +17,9 @@ npm run dev
 
 - Unofficial project (not affiliated with Leioa municipality).
 - Bus positions are estimated from arrivals data, not raw GPS.
+- Live topology is preferred, with a validated bundled snapshot as fallback so
+  lines and stops remain visible during provider outages. Arrival data is never
+  fabricated.
 - The estimation model and its validation boundaries are documented in
   [docs/tracking-model.md](docs/tracking-model.md).
 - Debug panel is hidden by default in production. Use `?debug=1` to show it.
