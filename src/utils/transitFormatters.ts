@@ -1,5 +1,27 @@
+import { PREDICTION_STALE_WARNING_SECONDS } from '../config/transit'
 import type { BusConfidenceLabel, BusPrediction, BusRenderState } from '../types/tracking'
 import type { Arrival, Station } from '../types/transit'
+
+const CONFIDENCE_PRESENTATION = {
+  high: {
+    level: 'Alta',
+    explanation: 'señal consistente',
+    signal: 'Actualizado',
+  },
+  medium: {
+    level: 'Media',
+    explanation: 'predicción aproximada',
+    signal: 'Aproximado',
+  },
+  low: {
+    level: 'Baja',
+    explanation: 'información inestable o antigua',
+    signal: 'Información antigua',
+  },
+} as const satisfies Record<
+  BusConfidenceLabel,
+  { level: string; explanation: string; signal: string }
+>
 
 export function buildArrivalsPopup(
   station: Station,
@@ -13,7 +35,7 @@ export function buildArrivalsPopup(
   const items = arrivals
     .sort((left, right) => left.minutes - right.minutes)
     .map((arrival) => {
-      const timeLabel = arrival.minutes <= 0 ? 'Llegando' : `${arrival.minutes} min`
+      const timeLabel = formatEta(arrival.minutes)
       return `<li><strong class="arrival-time">${timeLabel}</strong><span>${escapeHtml(resolveLineName(arrival.lineRef))}</span></li>`
     })
     .join('')
@@ -36,18 +58,9 @@ export function buildBusPopup(
         ? 'Detenido en parada'
         : 'Estimación ambigua'
 
-  const confidenceExplanation =
-    confidenceLabel === 'high'
-      ? 'señal consistente'
-      : confidenceLabel === 'medium'
-        ? 'predicción aproximada'
-        : 'información inestable o antigua'
-  const freshnessLabel =
-    predictionAgeSeconds < 60
-      ? 'Predicción actualizada recientemente'
-      : `Predicción sin cambios desde hace ${Math.max(1, Math.round(predictionAgeSeconds / 60))} min`
-  const confidenceText =
-    confidenceLabel === 'high' ? 'Alta' : confidenceLabel === 'medium' ? 'Media' : 'Baja'
+  const confidenceExplanation = CONFIDENCE_PRESENTATION[confidenceLabel].explanation
+  const freshnessLabel = formatPredictionFreshness(predictionAgeSeconds)
+  const confidenceText = formatConfidenceLevel(confidenceLabel)
 
   return `
     <div class="bus-popup">
@@ -59,11 +72,34 @@ export function buildBusPopup(
       <dl>
         <div><dt>Estado</dt><dd>${stateLabel}</dd></div>
         <div><dt>Próxima parada</dt><dd>${escapeHtml(prediction.station.name)}</dd></div>
-        <div><dt>Llegada</dt><dd>${prediction.minutes <= 0 ? 'Llegando' : `${prediction.minutes} min`}</dd></div>
+        <div><dt>Llegada</dt><dd>${formatEta(prediction.minutes)}</dd></div>
       </dl>
       <p class="bus-popup__note">${confidenceExplanation}. ${freshnessLabel}.</p>
     </div>
   `
+}
+
+export function formatEta(minutes: number): string {
+  return minutes <= 0 ? 'Llegando' : `${minutes} min`
+}
+
+export function formatConfidenceLevel(confidence: BusConfidenceLabel): string {
+  return CONFIDENCE_PRESENTATION[confidence].level
+}
+
+export function formatBusSignal(
+  confidence: BusConfidenceLabel,
+  predictionAgeSeconds: number,
+): string {
+  if (confidence === 'low' || predictionAgeSeconds >= PREDICTION_STALE_WARNING_SECONDS) {
+    return 'Información antigua'
+  }
+  return CONFIDENCE_PRESENTATION[confidence].signal
+}
+
+function formatPredictionFreshness(predictionAgeSeconds: number): string {
+  if (predictionAgeSeconds < 60) return 'Predicción actualizada recientemente'
+  return `Predicción sin cambios desde hace ${Math.max(1, Math.round(predictionAgeSeconds / 60))} min`
 }
 
 export function formatTimestamp(value: Date): string {

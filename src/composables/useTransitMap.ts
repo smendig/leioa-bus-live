@@ -1,9 +1,9 @@
 import L from 'leaflet'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 
-import busLocationIconUrl from '../assets/bus-location.png'
 import {
-  LINE_COLORS,
+  getTransitLineName,
+  getTransitLinePresentation,
   MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT,
   MAP_BOOTSTRAP_POLL_DELAYS_MS,
   MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT,
@@ -50,7 +50,7 @@ import { buildArrivalsPopup, buildBusPopup, formatTimestamp } from '../utils/tra
 const MAP_ELEMENT_ID = 'map'
 const BUS_MARKER_ICON_SIZE = [72, 48] as const
 const BUS_MARKER_ICON = L.icon({
-  iconUrl: busLocationIconUrl,
+  iconUrl: `${import.meta.env.BASE_URL}bus-location.png`,
   iconSize: [...BUS_MARKER_ICON_SIZE],
   iconAnchor: [BUS_MARKER_ICON_SIZE[0] / 2, BUS_MARKER_ICON_SIZE[1]],
   popupAnchor: [0, -BUS_MARKER_ICON_SIZE[1] + 6],
@@ -200,7 +200,7 @@ export function useTransitMap() {
     visibleLineRefs.value = linesCache.value.map((line) => line.ref)
 
     linesCache.value.forEach((line) => {
-      const color = LINE_COLORS[line.ref] ?? '#5c1810'
+      const color = getTransitLinePresentation(line.ref).color
       const layer = L.geoJSON(getDisplayGeometry(line.encodedPath), {
         style: { color, weight: 6, opacity: 0.8 },
         pane: 'linesPane',
@@ -647,7 +647,7 @@ function createBusMarkerIcon(): L.Icon {
 function enrichLine(line: Line): LineWithGeometry {
   return {
     ...line,
-    name: line.ref === 'L.UNICA' ? 'LINEA 3 (UNICA)' : line.name,
+    name: getTransitLineName(line.ref, line.name),
     geoJson: decodeLineGeometry(line.encodedPath),
   }
 }

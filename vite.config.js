@@ -1,5 +1,4 @@
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
 import { defineConfig } from 'vite'
 
 const isGithubActions = process.env.GITHUB_ACTIONS === 'true'
@@ -10,9 +9,4 @@ const base = isGithubActions && repoName ? `/${repoName}/` : '/'
 export default defineConfig({
   base,
   plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
 })

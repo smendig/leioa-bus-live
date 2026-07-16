@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { BusPrediction } from '../types/tracking'
-import { buildBusPopup } from './transitFormatters'
+import { buildBusPopup, formatBusSignal, formatEta } from './transitFormatters'
 
 describe('buildBusPopup', () => {
   it('renders defensively when the upstream bus identifier is numeric at runtime', () => {
@@ -39,5 +39,13 @@ describe('buildBusPopup', () => {
     expect(buildBusPopup('306', prediction, 'Línea 2', 'ambiguous', 'low', 180)).toContain(
       'sin cambios desde hace 3 min',
     )
+  })
+
+  it('shares ETA and confidence wording across the map UI', () => {
+    expect(formatEta(0)).toBe('Llegando')
+    expect(formatEta(3)).toBe('3 min')
+    expect(formatBusSignal('high', 30)).toBe('Actualizado')
+    expect(formatBusSignal('medium', 30)).toBe('Aproximado')
+    expect(formatBusSignal('high', 180)).toBe('Información antigua')
   })
 })

@@ -69,7 +69,7 @@ function getRequiredEnv(name: keyof ImportMetaEnv): string {
 
 function encryptPayload(data: ApiPayload): string {
   const payload = { ...BASE_PAYLOAD, ...data }
-  const jsonStr = JSON.stringify(payload).replace(/":"/g, '":"').replace(/","/g, '","')
+  const jsonStr = JSON.stringify(payload)
 
   const encrypted = CryptoJS.AES.encrypt(jsonStr, KEY, {
     iv: IV,
@@ -108,9 +108,6 @@ async function makeRequest<T>(endpoint: string, payload: ApiPayload = {}): Promi
       method: 'GET',
       cache: 'no-store',
       signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_MS),
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
     })
 
     if (!response.ok) {

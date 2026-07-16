@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import { getTransitLinePresentation } from '../config/transit'
 import type { BusTrackingDiagnostic } from '../types/tracking'
+import { formatBusSignal, formatEta } from '../utils/transitFormatters'
 
 defineProps<{
   buses: BusTrackingDiagnostic[]
@@ -12,22 +14,6 @@ defineEmits<{
 }>()
 
 const isOpen = ref(false)
-
-function lineLabel(lineRef: string): string {
-  if (lineRef === 'L.1 LEIOA') return 'L1'
-  if (lineRef === 'L.2 LEIOA') return 'L2'
-  return 'L3'
-}
-
-function etaLabel(minutes: number): string {
-  return minutes <= 0 ? 'Llegando' : `${minutes} min`
-}
-
-function confidenceLabel(bus: BusTrackingDiagnostic): string {
-  if (bus.confidenceLabel === 'low' || bus.predictionAgeSeconds >= 180) return 'Información antigua'
-  if (bus.confidenceLabel === 'medium') return 'Aproximado'
-  return 'Actualizado'
-}
 </script>
 
 <template>
@@ -53,21 +39,18 @@ function confidenceLabel(bus: BusTrackingDiagnostic): string {
       >
         <span
           class="bus-row__line"
-          :class="{
-            'is-l2': bus.lineRef === 'L.2 LEIOA',
-            'is-l3': bus.lineRef === 'L.UNICA',
-          }"
+          :style="{ backgroundColor: getTransitLinePresentation(bus.lineRef).color }"
         >
-          {{ lineLabel(bus.lineRef) }}
+          {{ getTransitLinePresentation(bus.lineRef).shortLabel }}
         </span>
         <span class="bus-row__main">
           <strong>Bus {{ bus.busId }}</strong>
           <small>{{ bus.nextStopName }}</small>
           <small class="bus-row__confidence" :class="`is-${bus.confidenceLabel}`">
-            {{ confidenceLabel(bus) }}
+            {{ formatBusSignal(bus.confidenceLabel, bus.predictionAgeSeconds) }}
           </small>
         </span>
-        <strong class="bus-row__eta">{{ etaLabel(bus.minutesToNextStop) }}</strong>
+        <strong class="bus-row__eta">{{ formatEta(bus.minutesToNextStop) }}</strong>
       </button>
     </div>
   </section>
@@ -154,14 +137,6 @@ function confidenceLabel(bus: BusTrackingDiagnostic): string {
   color: white;
   font-size: 0.68rem;
   font-weight: 900;
-}
-
-.bus-row__line.is-l2 {
-  background: #008d8b;
-}
-
-.bus-row__line.is-l3 {
-  background: #c51f31;
 }
 
 .bus-row__main {

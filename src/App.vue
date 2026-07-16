@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css'
 
-import { ref } from 'vue'
-
 import BusListPanel from './components/BusListPanel.vue'
 import DiagnosticsPanel from './components/DiagnosticsPanel.vue'
 import ErrorBanner from './components/ErrorBanner.vue'
@@ -10,7 +8,6 @@ import MapActions from './components/MapActions.vue'
 import MapHeader from './components/MapHeader.vue'
 import MapLegend from './components/MapLegend.vue'
 import { useTransitMap } from './composables/useTransitMap'
-import { MOBILE_MEDIA_QUERY } from './config/ui'
 import { isDebugEnabled } from './utils/debug'
 
 const {
@@ -26,9 +23,6 @@ const {
   visibleLineRefs,
 } = useTransitMap()
 const debugEnabled = isDebugEnabled()
-const isMobileViewport =
-  typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA_QUERY).matches
-const debugPanelOpen = ref(!isMobileViewport)
 </script>
 
 <template>
@@ -50,13 +44,7 @@ const debugPanelOpen = ref(!isMobileViewport)
 
     <ErrorBanner v-if="errorMessage" :message="errorMessage" />
 
-    <DiagnosticsPanel
-      :debug-enabled="debugEnabled"
-      :diagnostics="diagnostics"
-      :is-open="debugPanelOpen"
-      @open="debugPanelOpen = true"
-      @close="debugPanelOpen = false"
-    />
+    <DiagnosticsPanel v-if="debugEnabled" :diagnostics="diagnostics" />
   </div>
 </template>
 

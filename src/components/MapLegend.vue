@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { TRANSIT_LINES } from '../config/transit'
+
 defineProps<{
   visibleLines: string[]
 }>()
@@ -6,27 +8,21 @@ defineProps<{
 defineEmits<{
   toggleLine: [lineRef: string]
 }>()
-
-const lines = [
-  { ref: 'L.1 LEIOA', label: 'L1', className: 'line-dot--one' },
-  { ref: 'L.2 LEIOA', label: 'L2', className: 'line-dot--two' },
-  { ref: 'L.UNICA', label: 'L3', className: 'line-dot--three' },
-]
 </script>
 
 <template>
   <aside class="map-legend" aria-label="Filtrar líneas del mapa">
     <div class="legend-lines">
       <button
-        v-for="line in lines"
+        v-for="line in TRANSIT_LINES"
         :key="line.ref"
         type="button"
         :class="{ 'is-hidden': !visibleLines.includes(line.ref) }"
         :aria-pressed="visibleLines.includes(line.ref)"
-        :aria-label="`${visibleLines.includes(line.ref) ? 'Ocultar' : 'Mostrar'} línea ${line.label}`"
+        :aria-label="`${visibleLines.includes(line.ref) ? 'Ocultar' : 'Mostrar'} línea ${line.shortLabel}`"
         @click="$emit('toggleLine', line.ref)"
       >
-        <i class="line-dot" :class="line.className" />{{ line.label }}
+        <i class="line-dot" :style="{ backgroundColor: line.color }" />{{ line.shortLabel }}
       </button>
     </div>
     <p>Posiciones estimadas</p>
@@ -92,15 +88,6 @@ const lines = [
   width: 9px;
   height: 9px;
   border-radius: 999px;
-  background: var(--primary);
-}
-
-.line-dot--two {
-  background: #009d9a;
-}
-
-.line-dot--three {
-  background: #d72638;
 }
 
 .map-legend p {

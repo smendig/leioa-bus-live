@@ -26,8 +26,36 @@ export const PREDICTION_STALE_WARNING_SECONDS = 180
 export const SAME_STOP_OVERLAP_PENALTY = 0.05
 export const LOW_ETA_SAME_STOP_OVERLAP_PENALTY = 0.16
 
-export const LINE_COLORS: Record<string, string> = {
-  'L.1 LEIOA': '#004e4d',
-  'L.2 LEIOA': '#009d9a',
-  'L.UNICA': '#d72638',
+const DEFAULT_LINE_COLOR = '#5c1810'
+
+export interface TransitLinePresentation {
+  ref: string
+  shortLabel: string
+  color: string
+  displayName?: string
+}
+
+export const TRANSIT_LINES = [
+  { ref: 'L.1 LEIOA', shortLabel: 'L1', color: '#004e4d' },
+  { ref: 'L.2 LEIOA', shortLabel: 'L2', color: '#009d9a' },
+  {
+    ref: 'L.UNICA',
+    shortLabel: 'L3',
+    color: '#d72638',
+    displayName: 'LINEA 3 (UNICA)',
+  },
+] as const satisfies readonly TransitLinePresentation[]
+
+export function getTransitLinePresentation(lineRef: string): TransitLinePresentation {
+  return (
+    TRANSIT_LINES.find((line) => line.ref === lineRef) ?? {
+      ref: lineRef,
+      shortLabel: lineRef,
+      color: DEFAULT_LINE_COLOR,
+    }
+  )
+}
+
+export function getTransitLineName(lineRef: string, sourceName: string): string {
+  return getTransitLinePresentation(lineRef).displayName ?? sourceName
 }

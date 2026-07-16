@@ -1,33 +1,31 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
+import { MOBILE_MEDIA_QUERY } from '../config/ui'
 import type { BusTrackingDiagnostic } from '../types/tracking'
 
 const props = defineProps<{
-  debugEnabled: boolean
   diagnostics: BusTrackingDiagnostic[]
-  isOpen: boolean
 }>()
 
-const emit = defineEmits<(event: 'open' | 'close') => void>()
-
-const hasDiagnostics = computed(() => props.debugEnabled && props.diagnostics.length > 0)
+const isOpen = ref(!window.matchMedia(MOBILE_MEDIA_QUERY).matches)
+const hasDiagnostics = computed(() => props.diagnostics.length > 0)
 </script>
 
 <template>
   <button
-    v-if="hasDiagnostics && !props.isOpen"
+    v-if="hasDiagnostics && !isOpen"
     type="button"
     class="debug-toggle debug-toggle--show"
-    @click="emit('open')"
+    @click="isOpen = true"
   >
     Show diagnostics
   </button>
 
-  <aside v-if="hasDiagnostics && props.isOpen" class="debug-panel">
+  <aside v-if="hasDiagnostics && isOpen" class="debug-panel">
     <div class="debug-panel-header">
       <h2>Tracking diagnostics</h2>
-      <button type="button" class="debug-toggle debug-toggle--hide" @click="emit('close')">
+      <button type="button" class="debug-toggle debug-toggle--hide" @click="isOpen = false">
         Hide
       </button>
     </div>
