@@ -10,7 +10,8 @@ export const TRANSIT_PUBLIC_LANG = 'ES'
 export const MAP_POLL_INTERVAL_MS = 15000
 export const MAP_IDLE_POLL_INTERVAL_MS = 30000
 export const MAP_NO_SERVICE_POLL_INTERVAL_MS = 60000
-export const MAP_BOOTSTRAP_POLL_DELAYS_MS = [5000, 10000] as const
+// One follow-up sample is enough to establish drift; normal polling continues at 15 s.
+export const MAP_BOOTSTRAP_POLL_DELAYS_MS = [7000] as const
 export const MAP_BOOTSTRAP_DRIFT_SAMPLE_COUNT = 2
 export const MAP_BOOTSTRAP_STATUS_SAMPLE_COUNT = MAP_BOOTSTRAP_POLL_DELAYS_MS.length + 1
 export const NO_SERVICE_LOCAL_TIMEZONE = 'Europe/Madrid'
